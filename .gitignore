@@ -25,5 +25,5 @@ server/uploads/logo/*
 Thumbs.db
 .vscode/
 .idea/
-
+/server/
 npm-debug.log*
