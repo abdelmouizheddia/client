@@ -1,10 +1,16 @@
+```gitignore
 node_modules/
 dist/
 build/
 .env
 .env.local
 dev.db
+
+# Server is a separate repository
+/server/
+
 uploads/
+
 # Prisma / SQLite
 server/prisma/dev.db
 server/prisma/dev.db-journal
@@ -25,5 +31,6 @@ server/uploads/logo/*
 Thumbs.db
 .vscode/
 .idea/
-/server/
+
 npm-debug.log*
+```
