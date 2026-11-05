@@ -1,3 +1,4 @@
+import { getImageUrl } from '../../api/client';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Users, CreditCard, CalendarCheck, Wallet, Banknote,
@@ -47,7 +48,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
       <div className="flex items-center gap-3 px-5 py-6 border-b border-white/10">
         <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 gold-edge overflow-hidden">
           {logoUrl
-            ? <img src={logoUrl} alt="" className="h-full w-full object-cover" />
+            ? <img src={getImageUrl(logoUrl) || ''} alt="" className="h-full w-full object-cover" />
             : <Dumbbell className="h-5 w-5 text-gold-300" />}
         </div>
         <div className="min-w-0">
@@ -110,3 +111,4 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
     </>
   );
 }
+

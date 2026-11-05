@@ -1,3 +1,4 @@
+import { getImageUrl } from '../api/client';
 import { useEffect, useRef, useState } from 'react';
 import { Dumbbell } from 'lucide-react';
 import { attendanceApi, settingsApi } from '../api/resources';
@@ -65,7 +66,7 @@ export default function Display() {
       <header className="flex items-center justify-between px-8 py-5">
         <div className="flex items-center gap-4">
           {settings?.logoUrl ? (
-            <img src={settings.logoUrl} className="h-12 w-12 rounded-xl object-cover" alt="" />
+            <img src={getImageUrl(settings.logoUrl) || ''} className="h-12 w-12 rounded-xl object-cover" alt="" />
           ) : (
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 border border-yellow-400/30">
               <Dumbbell className="h-6 w-6 text-yellow-300" />
@@ -171,3 +172,4 @@ export default function Display() {
     </div>
   );
 }
+

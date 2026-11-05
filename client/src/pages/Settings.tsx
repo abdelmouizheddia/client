@@ -1,3 +1,4 @@
+import { getImageUrl } from '../api/client';
 import { useEffect, useState, FormEvent, useCallback } from 'react';
 import {
   Camera, Save, KeyRound, Sun, Moon, DatabaseBackup,
@@ -72,7 +73,7 @@ export default function Settings() {
           address: s.address || '',
           whatsappCountryCode: s.whatsappCountryCode || '213',
         });
-        setLogoPreview(s.logoUrl || null);
+        setLogoPreview(getImageUrl(s.logoUrl));
         setHasRfidKey(!!s.hasRfidApiKey);
       })
       .catch((err) => showToast(apiErrorMessage(err), 'error'))
@@ -472,3 +473,4 @@ export default function Settings() {
     </div>
   );
 }
+
