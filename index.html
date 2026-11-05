@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="description" content="Azzouz Gym - صالة عزوز لكمال الأجسام واللياقة البدنية والأيروبيك للرجال والسيدات ببرمادية غليزان.">
+<title>Azzouz Gym — صالة عزوز الرياضية | غليزان</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════════
+   RESET & VARIABLES
+════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:   #050505;
+  --ink:     #0E0E0E;
+  --carbon:  #151515;
+  --dark:    #1D1D1D;
+  --panel:   #252525;
+  --edge:    #2D2D2D;
+  --lime:    #ddf500;
+  --men:     #00d2ff;
+  --women:   #ff2a85;
+  --aerobic: #c850ff;
+  --white:   #FFFFFF;
+  --off:     #CCCCCC;
+  --muted:   #888888;
+  --danger:  #ff3b3b;
+  --success: #00e676;
+
+  --ease: cubic-bezier(.22,.68,0,1.2);
+  --fast: .2s ease;
+  --mid:  .35s ease;
+}
+html{scroll-behavior:smooth;font-size:16px;overflow-x:hidden}
+body{
+  background:var(--black);
+  color:var(--white);
+  font-family:'Cairo',sans-serif;
+  overflow-x:hidden;
+  width:100%;
+  -webkit-font-smoothing:antialiased;
+}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--black)}
+::-webkit-scrollbar-thumb{background:var(--lime);border-radius:3px}
+
+/* ════════════════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════════════════ */
+.lime{color:var(--lime)}
+.pink{color:var(--women)}
+.tag{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.8rem;font-weight:700;letter-spacing:.3em;color:var(--lime);
+  text-transform:uppercase;direction:ltr;
+}
+.tag::before{content:'';width:20px;height:2px;background:var(--lime);flex-shrink:0}
+
+.section{padding:6rem 3.5rem;position:relative}
+.section-header{margin-bottom:3rem}
+.section-title{
+  font-family:'Barlow Condensed',sans-serif;font-size:clamp(2.4rem,4.5vw,4.5rem);
+  font-weight:900;font-style:italic;line-height:.92;letter-spacing:-.02em;direction:ltr;margin-top:.5rem;
+  text-transform:uppercase;
+}
+.section-title .w{color:var(--white)}
+.section-title .l{color:var(--lime)}
+.section-sub{font-size:.98rem;color:var(--muted);direction:rtl;margin-top:.6rem;line-height:1.8;}
+
+/* ════════════════════════════════════════════════════
+   PRELOADER
+════════════════════════════════════════════════════ */
+#preloader {
+  position: fixed; inset: 0; background: var(--black); z-index: 99999;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.2rem;
+  transition: opacity 0.6s ease, visibility 0.6s;
+}
+#preloader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.loader-logo { width: 160px; animation: pulseLoader 1.1s infinite alternate ease-in-out; }
+.loader-bar { width: 130px; height: 3px; background: var(--dark); border-radius: 3px; overflow: hidden; position: relative; }
+.loader-bar::after {
+  content: ''; position: absolute; top: 0; left: 0; width: 50%; height: 100%;
+  background: var(--lime); animation: loadSlide 1s infinite ease-in-out;
+}
+@keyframes loadSlide { 0% { left: -50%; } 100% { left: 100%; } }
+@keyframes pulseLoader {
+  0% { transform: scale(0.95); opacity: 0.6; }
+  100% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 20px rgba(221,245,0,0.4)); }
+}
+
+/* ════════════════════════════════════════════════════
+   NAVBAR
+════════════════════════════════════════════════════ */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 3.5rem;height:74px;
+  background:rgba(5,5,5,.88);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(221,245,0,.08);
+  transition:all var(--mid);
+}
+#nav.scrolled{height:64px;background:rgba(5,5,5,.96);box-shadow:0 8px 25px rgba(0,0,0,.6)}
+.nav-logo img{height:42px;width:auto;object-fit:contain}
+.nav-links{
+  display:flex;gap:2rem;list-style:none;
+  direction:ltr;align-items:center;
+}
+.nav-links a{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.85rem;font-weight:700;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--off);
+  transition:color var(--fast);position:relative;padding-bottom:4px;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:2px;background:var(--lime);
+  transform:scaleX(0);transform-origin:left;transition:transform var(--fast);
+}
+.nav-links a:hover,.nav-links a.active{color:var(--lime)}
+.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}
+.nav-actions{display:flex;gap:.75rem;align-items:center;}
+.nav-cta{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.82rem;font-weight:800;letter-spacing:.15em;
+  text-transform:uppercase;background:var(--lime);color:var(--black);
+  padding:.6rem 1.4rem;transition:all var(--fast);
+  clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+}
+.nav-cta:hover{background:#fff;transform:translateY(-2px)}
+.nav-cta.outline{
+  background:rgba(221,245,0,.06);color:var(--lime);
+  border:1px solid rgba(221,245,0,.4);
+  font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:0;
+}
+.nav-cta.outline:hover{background:var(--lime);color:var(--black)}
+
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;padding:6px;}
+.hamburger span{display:block;width:24px;height:2px;background:var(--white);transition:all .3s;}
+
+.mobile-menu{
+  display:none;position:fixed;inset:64px 0 0;
+  background:rgba(5,5,5,.98);backdrop-filter:blur(20px);
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:1.5rem;z-index:999;padding:2rem;overflow-y:auto;
+}
+.mobile-menu.open{display:flex}
+.mobile-menu a{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.7rem;font-weight:900;font-style:italic;
+  letter-spacing:.08em;color:var(--white);text-transform:uppercase;direction:ltr;
+}
+.mobile-menu a:hover{color:var(--lime)}
+
+/* ════════════════════════════════════════════════════
+   HERO SECTION
+════════════════════════════════════════════════════ */
+#hero{
+  min-height:100vh;
+  display:grid;grid-template-columns:1.15fr .85fr;
+  align-items:center;gap:2rem;
+  padding:96px 3.5rem 4rem;
+  position:relative;overflow:hidden;background:var(--black);
+}
+.video-container{position:absolute;inset:0;z-index:0;}
+.hero-video{width:100%;height:100%;object-fit:cover;}
+.video-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(90deg, rgba(5,5,5,0.78) 0%, rgba(5,5,5,0.9) 100%),
+             radial-gradient(circle at center, rgba(5,5,5,0.4) 0%, rgba(5,5,5,0.92) 100%);
+  z-index:1;
+}
+.hero-stripes{
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:repeating-linear-gradient(-55deg,transparent,transparent 60px,rgba(221,245,0,.015) 60px,rgba(221,245,0,.015) 61px);
+}
+.hero-center-content, .hero-right{position:relative;z-index:2;}
+
+.hero-badges-wrap{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.25rem;}
+.hero-eyebrow-top{
+  font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:700;
+  letter-spacing:.3em;color:var(--lime);text-transform:uppercase;direction:ltr;
+  background:rgba(221,245,0,.08);border:1px solid rgba(221,245,0,.25);
+  padding:.35rem .9rem;border-radius:4px;
+}
+.hero-ladies-badge{
+  font-size:.78rem;font-weight:700;color:#fff;
+  background:rgba(255,42,133,.18);border:1px solid rgba(255,42,133,.5);
+  padding:.3rem .9rem;border-radius:4px;display:inline-flex;align-items:center;gap:.4rem;
+}
+
+.hero-logo-wrap{margin-bottom:1.25rem;}
+.hero-logo-wrap img{max-width:400px;width:100%;filter:drop-shadow(0 0 40px rgba(221,245,0,.2));}
+.hero-headline{font-size:clamp(1.4rem,2.4vw,2.1rem);font-weight:900;color:var(--white);margin-bottom:.85rem;line-height:1.4;}
+.hero-desc{max-width:510px;font-size:.98rem;line-height:1.85;color:rgba(255,255,255,.75);margin-bottom:2rem;}
+
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-lime{
+  font-family:'Barlow Condensed',sans-serif;font-size:.92rem;font-weight:800;letter-spacing:.15em;
+  text-transform:uppercase;background:var(--lime);color:var(--black);
+  padding:.95rem 2.1rem;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:all var(--fast);display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+}
+.btn-lime:hover{background:#fff;transform:translateY(-2px)}
+.btn-ghost{
+  font-family:'Barlow Condensed',sans-serif;font-size:.92rem;font-weight:700;letter-spacing:.15em;
+  text-transform:uppercase;background:rgba(255,255,255,.04);color:var(--white);
+  padding:.95rem 2.1rem;border:1px solid rgba(255,255,255,.2);
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:all var(--fast);display:inline-flex;align-items:center;justify-content:center;
+}
+.btn-ghost:hover{border-color:var(--lime);color:var(--lime);transform:translateY(-2px)}
+
+.hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:1rem;}
+.stat-card{
+  background:rgba(21,21,21,.88);backdrop-filter:blur(12px);
+  border:1px solid var(--edge);border-right:4px solid var(--lime);
+  padding:1.15rem 1.6rem;width:250px;border-radius:6px;transition:transform var(--fast);
+}
+.stat-card.women-stat{border-right-color:var(--women);}
+.stat-card:hover{transform:translateX(-5px)}
+.stat-num{font-family:'Barlow Condensed',sans-serif;font-size:2.3rem;font-weight:900;font-style:italic;color:var(--lime);line-height:1;direction:ltr;}
+.stat-card.women-stat .stat-num{color:var(--women);}
+.stat-label{font-size:.78rem;color:var(--off);margin-top:.3rem;font-weight:600;}
+
+/* ════════════════════════════════════════════════════
+   MARQUEE STRIP
+════════════════════════════════════════════════════ */
+.marquee-strip{background:var(--lime);padding:.75rem 0;overflow:hidden;position:relative;z-index:3;}
+.marquee-inner{display:flex;animation:marquee 22s linear infinite;width:max-content;}
+.marquee-item{
+  font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:900;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--black);padding:0 2rem;white-space:nowrap;direction:ltr;
+}
+.marquee-dot{color:rgba(0,0,0,.35);font-size:1rem;align-self:center;}
+@keyframes marquee{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+
+/* ════════════════════════════════════════════════════
+   ABOUT & LADIES SPOTLIGHT
+════════════════════════════════════════════════════ */
+#about{background:var(--ink);display:grid;grid-template-columns:1fr 1.15fr;gap:4.5rem;align-items:center;}
+.about-visual{
+  position:relative;aspect-ratio:4/4.3;border-radius:8px;overflow:hidden;
+  background:var(--carbon);border:1px solid var(--edge);
+}
+.about-visual img{width:100%;height:100%;object-fit:cover;}
+.about-badge{
+  position:absolute;bottom:1.25rem;left:1.25rem;background:var(--lime);color:var(--black);
+  font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:900;letter-spacing:.2em;
+  padding:.45rem 1.1rem;border-radius:3px;direction:ltr;
+}
+.about-text{color:rgba(255,255,255,.72);line-height:1.9;font-size:.96rem;margin-top:1rem;}
+.about-text p{margin-bottom:.9rem}
+
+.ladies-highlight-box{
+  margin-top:1.5rem;background:linear-gradient(135deg, rgba(255,42,133,.12), rgba(200,80,255,.06));
+  border:1px solid rgba(255,42,133,.35);border-right:4px solid var(--women);
+  padding:1.15rem 1.35rem;border-radius:8px;
+}
+.ladies-highlight-title{font-size:.95rem;font-weight:800;color:#fff;display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem;}
+.ladies-highlight-sub{font-size:.82rem;color:var(--off);line-height:1.7;}
+
+.about-features{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-top:1.5rem;}
+.feat{display:flex;align-items:center;gap:.85rem;background:var(--carbon);border:1px solid var(--edge);border-radius:6px;padding:1rem;}
+.feat-ico{width:38px;height:38px;background:rgba(221,245,0,.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0;}
+.feat-name{font-size:.88rem;font-weight:700;color:var(--white)}
+.feat-sub{font-size:.72rem;color:var(--muted);margin-top:.1rem}
+
+/* ════════════════════════════════════════════════════
+   TRAINING PROGRAMS (SERVICES)
+════════════════════════════════════════════════════ */
+#services{background:var(--black)}
+.srv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+.srv{
+  background:var(--ink);border:1px solid var(--edge);border-radius:8px;
+  padding:2.2rem 1.8rem;position:relative;overflow:hidden;transition:all var(--mid);
+}
+.srv:hover{background:var(--carbon);border-color:rgba(221,245,0,.35);transform:translateY(-4px)}
+.srv.ladies-srv{border-color:rgba(255,42,133,.35);background:linear-gradient(180deg, rgba(255,42,133,.06) 0%, var(--ink) 100%);}
+.srv.ladies-srv:hover{border-color:var(--women);}
+.srv-ghost-num{position:absolute;top:.6rem;left:1.1rem;font-family:'Barlow Condensed',sans-serif;font-size:4rem;font-weight:900;font-style:italic;color:rgba(221,245,0,.06);line-height:1;direction:ltr;pointer-events:none;}
+.srv-ico{font-size:2rem;margin-bottom:1rem}
+.srv-name{font-family:'Barlow Condensed',sans-serif;font-size:1.45rem;font-weight:900;font-style:italic;letter-spacing:.02em;direction:ltr;margin-bottom:.35rem;}
+.srv-name .l{color:var(--lime)}
+.srv-name .p{color:var(--women)}
+.srv-title-ar{font-size:.92rem;font-weight:700;color:var(--white);margin-bottom:.5rem;}
+.srv-desc{font-size:.84rem;color:var(--muted);line-height:1.75;}
+
+/* ── INTERACTIVE EQUIPMENT ZONES ── */
+.zones-box{margin-top:3.5rem;background:var(--ink);border:1px solid var(--edge);border-radius:10px;padding:2.2rem;}
+.zones-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;}
+.zones-tabs{display:flex;gap:.5rem;flex-wrap:wrap;}
+.zone-btn{
+  background:var(--carbon);color:var(--off);border:1px solid var(--edge);
+  padding:.55rem 1.15rem;border-radius:6px;font-size:.82rem;font-weight:700;transition:all var(--fast);
+}
+.zone-btn:hover,.zone-btn.active{background:var(--lime);color:var(--black);border-color:var(--lime)}
+.machines-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.9rem;}
+.machine-card{
+  background:var(--carbon);border:1px solid var(--edge);border-right:3px solid var(--lime);
+  padding:1rem 1.15rem;border-radius:6px;display:flex;justify-content:space-between;align-items:center;gap:.5rem;
+}
+.machine-name{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;direction:ltr;}
+.machine-target{font-size:.75rem;color:var(--lime);background:rgba(221,245,0,.08);padding:.2rem .55rem;border-radius:4px;font-weight:600;}
+
+/* ════════════════════════════════════════════════════
+   OFFICIAL WEEKLY SCHEDULE (MATCHING POSTER)
+════════════════════════════════════════════════════ */
+#schedule{background:var(--ink);}
+.schedule-top-bar{
+  display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1.25rem;margin-bottom:2.5rem;
+}
+.live-status-pill{
+  display:inline-flex;align-items:center;gap:.6rem;
+  background:var(--carbon);border:1px solid var(--edge);
+  padding:.65rem 1.25rem;border-radius:50px;font-size:.84rem;font-weight:700;
+}
+.status-dot{width:10px;height:10px;border-radius:50%;background:var(--success);box-shadow:0 0 10px var(--success);animation:pulseDot 1.5s infinite;}
+.status-dot.closed{background:var(--danger);box-shadow:0 0 10px var(--danger);}
+@keyframes pulseDot{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+
+.schedule-grid-cards{
+  display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.25rem;
+}
+.day-card{
+  background:var(--carbon);border:1px solid var(--edge);border-radius:10px;
+  overflow:hidden;transition:all var(--fast);display:flex;flex-direction:column;
+}
+.day-card.today{
+  border-color:var(--lime);
+  box-shadow:0 10px 30px rgba(221,245,0,.1);
+}
+.day-card-head{
+  background:var(--dark);padding:1rem 1.35rem;border-bottom:1px solid var(--edge);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.day-card.today .day-card-head{background:var(--lime);color:var(--black);}
+.day-name-ar{font-size:1.1rem;font-weight:900;}
+.day-name-en{font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.1em;opacity:.75;direction:ltr;}
+.today-tag{background:var(--black);color:var(--lime);font-size:.68rem;font-weight:800;padding:.15rem .55rem;border-radius:4px;margin-right:.5rem;}
+
+.day-slots{padding:1.1rem 1.25rem;display:flex;flex-direction:column;gap:.75rem;flex:1;justify-content:center;}
+.slot-item{
+  display:flex;align-items:center;justify-content:space-between;gap:.75rem;
+  padding:.7rem .95rem;border-radius:6px;background:var(--ink);border:1px solid var(--edge);
+}
+.slot-item.men-slot{border-right:3px solid var(--men);}
+.slot-item.women-slot{border-right:3px solid var(--women);background:rgba(255,42,133,.05);}
+.slot-item.aerobic-slot{border-right:3px solid var(--aerobic);background:rgba(200,80,255,.07);}
+
+.slot-who{display:flex;align-items:center;gap:.45rem;font-size:.84rem;font-weight:800;}
+.slot-item.men-slot .slot-who{color:var(--men);}
+.slot-item.women-slot .slot-who{color:var(--women);}
+.slot-item.aerobic-slot .slot-who{color:var(--aerobic);}
+
+.slot-time{
+  font-family:'Barlow Condensed',sans-serif;font-size:.98rem;font-weight:800;
+  color:var(--white);direction:ltr;letter-spacing:.03em;background:rgba(255,255,255,.04);
+  padding:.2rem .6rem;border-radius:4px;
+}
+
+/* ════════════════════════════════════════════════════
+   TRAINERS SECTION (3 COACHES)
+════════════════════════════════════════════════════ */
+#trainers{background:var(--black)}
+.trainers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.75rem;max-width:1050px;margin:0 auto;}
+.trainer-card{
+  background:var(--ink);border:1px solid var(--edge);border-radius:10px;
+  overflow:hidden;transition:all var(--mid);display:flex;flex-direction:column;
+}
+.trainer-card:hover{transform:translateY(-6px);border-color:var(--lime);}
+.trainer-card.ladies-coach:hover{border-color:var(--women);}
+.trainer-img{
+  aspect-ratio:4/4.5;background:var(--carbon);position:relative;overflow:hidden;
+  border-bottom:3px solid var(--lime);
+}
+.trainer-card.ladies-coach .trainer-img{border-bottom-color:var(--women);}
+.trainer-img img{width:100%;height:100%;object-fit:cover;object-position:top center;transition:transform .5s ease;}
+.trainer-card:hover .trainer-img img{transform:scale(1.05);}
+.trainer-fallback{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(circle at center, rgba(221,245,0,.12), var(--carbon));
+  color:var(--lime);font-size:3.2rem;
+}
+.trainer-card.ladies-coach .trainer-fallback{
+  background:radial-gradient(circle at center, rgba(255,42,133,.15), var(--carbon));
+  color:var(--women);
+}
+.trainer-fallback span{
+  font-size:.72rem;color:var(--off);font-family:'Cairo',sans-serif;margin-top:.5rem;
+  background:rgba(0,0,0,.6);padding:.25rem .7rem;border-radius:4px;
+}
+.trainer-badge{
+  position:absolute;top:12px;right:12px;z-index:2;
+  background:rgba(5,5,5,.85);backdrop-filter:blur(6px);
+  border:1px solid rgba(221,245,0,.4);color:var(--lime);
+  font-size:.72rem;font-weight:700;padding:.25rem .7rem;border-radius:4px;
+}
+.trainer-card.ladies-coach .trainer-badge{border-color:var(--women);color:var(--women);}
+.trainer-body{padding:1.5rem;flex:1;display:flex;flex-direction:column;justify-content:space-between;}
+.trainer-name{font-family:'Barlow Condensed',sans-serif;font-size:1.55rem;font-weight:900;font-style:italic;direction:ltr;color:var(--white);}
+.trainer-name-ar{font-size:.88rem;color:var(--off);font-weight:700;margin-top:.1rem;}
+.trainer-spec{font-size:.82rem;color:var(--lime);margin-top:.45rem;font-weight:700;}
+.trainer-card.ladies-coach .trainer-spec{color:var(--women);}
+.trainer-exp{font-size:.78rem;color:var(--muted);margin-top:.45rem;line-height:1.65;}
+.trainer-book-btn{
+  margin-top:1.25rem;width:100%;background:var(--carbon);color:var(--white);
+  border:1px solid var(--edge);padding:.7rem;border-radius:6px;
+  font-size:.8rem;font-weight:700;text-align:center;transition:all var(--fast);display:block;
+}
+.trainer-book-btn:hover{background:var(--lime);color:var(--black);border-color:var(--lime)}
+.trainer-card.ladies-coach .trainer-book-btn:hover{background:var(--women);color:var(--white);border-color:var(--women)}
+
+/* ════════════════════════════════════════════════════
+   SIMPLIFIED PRICING SECTION (PRICE + WHATSAPP BTN ONLY)
+════════════════════════════════════════════════════ */
+#pricing{background:var(--ink)}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:1.75rem;max-width:1000px;margin:0 auto;}
+.plan{
+  background:var(--carbon);border:1px solid var(--edge);border-radius:12px;
+  overflow:hidden;transition:transform var(--mid), border-color var(--mid);
+  position:relative;display:flex;flex-direction:column;justify-content:space-between;
+  padding:2.5rem 2rem;text-align:center;
+}
+.plan:hover{transform:translateY(-6px);border-color:var(--lime);}
+.plan.hot{
+  background:linear-gradient(180deg, rgba(221,245,0,.1) 0%, var(--carbon) 100%);
+  border:2px solid var(--lime);box-shadow:0 15px 40px rgba(221,245,0,.1);
+}
+.plan-label{
+  font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:800;letter-spacing:.25em;
+  display:inline-block;padding:.3rem .9rem;margin:0 auto 1rem;
+  background:rgba(221,245,0,.12);color:var(--lime);border-radius:4px;direction:ltr;
+}
+.plan.hot .plan-label{background:var(--lime);color:var(--black);}
+.plan-name{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;font-style:italic;direction:ltr;color:var(--white);}
+.plan-name-ar{font-size:.9rem;color:var(--off);margin-top:.25rem;font-weight:700;}
+.plan-price-row{margin:1.8rem 0;display:flex;align-items:baseline;justify-content:center;gap:.35rem;direction:ltr;}
+.plan-price{font-family:'Barlow Condensed',sans-serif;font-size:4.2rem;font-weight:900;line-height:1;color:var(--lime);}
+.plan-curr{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:var(--off);}
+.plan-btn{
+  display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;
+  font-size:.92rem;font-weight:800;padding:1rem;border-radius:6px;transition:all var(--fast);
+}
+.plan-btn.gb{background:var(--dark);color:var(--white);border:1px solid var(--edge);}
+.plan-btn.gb:hover{background:var(--lime);color:var(--black);border-color:var(--lime);}
+.plan-btn.lb{background:var(--lime);color:var(--black);}
+.plan-btn.lb:hover{background:#fff;}
+
+/* ════════════════════════════════════════════════════
+   FITNESS CALCULATOR
+════════════════════════════════════════════════════ */
+#calculator-hub{background:var(--black);}
+.calc-wrapper{
+  max-width:820px;margin:0 auto;background:var(--ink);
+  border:1px solid var(--edge);padding:2.5rem;border-radius:10px;
+}
+.calc-results-grid{
+  display:none;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem;
+  padding-top:2rem;border-top:1px solid var(--edge);
+}
+.calc-results-grid.active{display:grid;}
+.res-card{background:var(--carbon);border:1px solid var(--edge);border-bottom:3px solid var(--lime);padding:1.15rem .8rem;border-radius:8px;text-align:center;}
+.res-val{font-family:'Barlow Condensed',sans-serif;font-size:1.9rem;font-weight:900;color:var(--lime);direction:ltr;}
+.res-lbl{font-size:.76rem;color:var(--muted);margin-top:.2rem;}
+.res-status-banner{grid-column:1 / -1;background:rgba(221,245,0,.08);border:1px solid rgba(221,245,0,.25);padding:1rem;border-radius:6px;text-align:center;font-size:.88rem;}
+
+/* ════════════════════════════════════════════════════
+   CTA & CONTACT
+════════════════════════════════════════════════════ */
+#cta-band{
+  background:var(--lime);padding:4rem 3.5rem;display:flex;align-items:center;
+  justify-content:space-between;gap:2rem;flex-wrap:wrap;
+}
+.cta-band-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:900;font-style:italic;color:var(--black);line-height:.92;direction:ltr;}
+.cta-band-sub{font-size:.98rem;font-weight:700;color:rgba(0,0,0,.75);margin-top:.4rem;}
+.btn-black{
+  font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:800;letter-spacing:.18em;
+  text-transform:uppercase;background:var(--black);color:var(--lime);padding:1rem 2.2rem;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:all var(--fast);direction:ltr;
+}
+
+#contact{background:var(--ink);display:grid;grid-template-columns:1fr 1.15fr;gap:4rem;align-items:start;}
+.contact-logo img{height:50px;object-fit:contain;margin-bottom:1.25rem}
+.contact-blurb{font-size:.9rem;color:var(--muted);line-height:1.85;margin-bottom:1.5rem;}
+.contact-item{display:flex;align-items:center;gap:.85rem;margin-bottom:.85rem;}
+.ci-ico{width:38px;height:38px;background:rgba(221,245,0,.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.ci-text{font-size:.88rem;color:var(--off)}
+.contact-socials{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.5rem;}
+.soc-btn{
+  padding:.5rem .95rem;background:var(--carbon);border:1px solid var(--edge);border-radius:6px;
+  display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:700;transition:all var(--fast);
+}
+.soc-btn:hover{background:var(--lime);color:var(--black);border-color:var(--lime)}
+
+.contact-map-container{
+  position:relative;width:100%;height:230px;margin:1.5rem 0;
+  border-radius:8px;overflow:hidden;border:1px solid var(--edge);
+}
+.map-dir-btn{
+  position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+  background:var(--lime);color:var(--black);font-weight:800;padding:.4rem 1.2rem;
+  border-radius:4px;font-size:.8rem;box-shadow:0 5px 15px rgba(0,0,0,.6);white-space:nowrap;
+}
+
+.contact-form{background:var(--carbon);border:1px solid var(--edge);padding:2.2rem;border-radius:10px;}
+.form-head{margin-bottom:1.5rem}
+.form-title{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;font-style:italic;direction:ltr;margin-bottom:.2rem;}
+.form-title .l{color:var(--lime)}
+.form-note{font-size:.82rem;color:var(--muted)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.fgrp{margin-bottom:1rem}
+.fgrp label{display:block;font-size:.76rem;font-weight:700;color:var(--off);margin-bottom:.4rem;}
+.fgrp input,.fgrp textarea,.fgrp select{
+  width:100%;background:var(--ink);border:1px solid var(--edge);border-radius:6px;padding:.82rem .95rem;
+  color:var(--white);font-family:'Cairo',sans-serif;font-size:.88rem;outline:none;transition:border-color var(--fast);
+}
+.fgrp input:focus,.fgrp textarea:focus,.fgrp select:focus{border-color:var(--lime);}
+.fgrp textarea{resize:vertical;min-height:95px}
+
+/* ════════════════════════════════════════════════════
+   MEMBER PORTAL & DASHBOARD (READY FOR INTEGRATION)
+════════════════════════════════════════════════════ */
+.modal-overlay { position: fixed; inset: 0; background: rgba(5,5,5,0.9); backdrop-filter: blur(10px); z-index: 100000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all var(--mid); padding: 1rem; }
+.modal-overlay.active { opacity: 1; visibility: visible; }
+.modal-content { background: var(--carbon); border: 1px solid var(--edge); border-top: 3px solid var(--lime); border-radius: 10px; padding: 2.2rem 1.75rem; width: 100%; max-width: 420px; position: relative; transform: translateY(25px); transition: all var(--mid); }
+.modal-overlay.active .modal-content { transform: translateY(0); }
+.close-modal { position: absolute; top: 14px; left: 14px; background: none; color: var(--muted); font-size: 1.2rem; }
+.close-modal:hover { color: var(--lime); }
+
+.dashboard-overlay { position: fixed; inset: 0; background: var(--black); z-index: 1000000; overflow-y: auto; padding: 1.5rem 1rem; }
+.dashboard-container { max-width: 850px; margin: 0 auto; }
+.dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--edge); padding-bottom: 1rem; }
+.profile-card { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.25rem; background: var(--carbon); border: 1px solid var(--edge); padding: 1.75rem; border-radius: 12px; margin-bottom: 1.5rem; border-right: 4px solid var(--lime); }
+.profile-main { display: flex; align-items: center; gap: 1.25rem; }
+.profile-avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--lime); overflow: hidden; flex-shrink: 0; background: var(--ink); display:flex; align-items:center; justify-content:center; }
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-name { font-size: 1.4rem; font-weight: 800; }
+.profile-id { font-family: 'Barlow Condensed', sans-serif; color: var(--muted); font-size: 1rem; letter-spacing: 0.1em; direction: ltr; }
+.status-badge { display: inline-block; background: rgba(0, 230, 118, 0.15); color: var(--success); padding: 0.25rem 0.85rem; border-radius: 20px; font-size: 0.78rem; font-weight: bold; margin-top:.35rem; }
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.dash-box { background: var(--ink); border: 1px solid var(--edge); padding: 1.35rem; border-radius: 8px; text-align: center; }
+.box-icon { font-size: 1.6rem; margin-bottom: 0.4rem; }
+.box-title { color: var(--muted); font-size: 0.78rem; margin-bottom: 0.3rem; }
+.box-value { font-family: 'Barlow Condensed', sans-serif; font-size: 1.7rem; font-weight: 900; font-style: italic; direction: ltr; }
+.box-sub { font-size: 0.72rem; color: var(--off); margin-top: 0.3rem; }
+
+.wa-float { position: fixed; bottom: 20px; left: 20px; background-color: #25D366; color: #FFF; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 18px rgba(37, 211, 102, 0.45); z-index: 998; transition: transform 0.3s var(--ease); }
+.wa-float:hover { transform: scale(1.08); }
+
+footer{ background:var(--black); border-top:1px solid var(--edge); padding:2.2rem 3.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.25rem; }
+.footer-logo img{height:36px;object-fit:contain;}
+.footer-copy{font-size:.75rem;color:var(--muted);direction:ltr;}
+.footer-links{display:flex;gap:1.5rem;list-style:none;direction:ltr;flex-wrap:wrap;}
+.footer-links a{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);transition:color var(--fast);}
+.footer-links a:hover{color:var(--lime)}
+
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ════════════════════════════════════════════════════
+   MOBILE & TABLET RESPONSIVENESS (100% OPTIMIZED)
+════════════════════════════════════════════════════ */
+@media(max-width:1050px){
+  .section{padding:4.5rem 2rem}
+  #nav{padding:0 2rem}
+  #hero{grid-template-columns:1fr;padding:96px 2rem 3.5rem}
+  .hero-right{flex-direction:row;align-items:stretch;flex-wrap:wrap}
+  .stat-card{flex:1;min-width:150px}
+  #about,#contact{grid-template-columns:1fr;gap:2.5rem}
+  .srv-grid,.plans,.trainers-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:768px){
+  .nav-links,.nav-actions{display:none}
+  .hamburger{display:flex}
+  .section{padding:3.5rem 1.15rem}
+  #nav{padding:0 1.15rem;height:64px}
+  #hero{padding:84px 1.15rem 2.5rem;text-align:right}
+  .hero-logo-wrap img{max-width:260px}
+  .hero-actions{flex-direction:column;width:100%}
+  .hero-actions .btn-lime,.hero-actions .btn-ghost{width:100%}
+  .hero-right{flex-direction:column;width:100%}
+  .stat-card{width:100%}
+  .srv-grid,.plans,.trainers-grid,.form-row,.calc-results-grid,.about-features,.schedule-grid-cards{grid-template-columns:1fr}
+  .zones-box,.calc-wrapper,.contact-form{padding:1.35rem 1rem}
+  .zones-tabs{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:.4rem}
+  .zone-btn{white-space:nowrap;flex-shrink:0}
+  .slot-item{flex-direction:row;padding:.65rem .8rem}
+  #cta-band,footer{padding:2.5rem 1.15rem;text-align:center;justify-content:center;flex-direction:column}
+  .btn-black{width:100%;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- شاشة التحميل -->
+<div id="preloader">
+  <img src="azzouz.png" alt="Azzouz Gym" class="loader-logo" onerror="this.style.display='none'">
+  <div class="loader-bar"></div>
+</div>
+
+<!-- شريط التنقل -->
+<nav id="nav">
+  <a href="#hero" class="nav-logo"><img src="azzouz.png" alt="Azzouz Gym"></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Programs</a></li>
+    <li><a href="#schedule">Schedule</a></li>
+    <li><a href="#trainers">Coaches</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#calculator-hub">Calculator</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="nav-cta outline" onclick="openLoginModal()">دخول الأعضاء 🔐</button>
+    <button class="nav-cta" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">اشترك الآن</button>
+  </div>
+  <button class="hamburger" id="hamBtn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- قائمة الهاتف المحمول -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about" onclick="closeMobile()">About</a>
+  <a href="#services" onclick="closeMobile()">Programs</a>
+  <a href="#schedule" onclick="closeMobile()">Schedule</a>
+  <a href="#trainers" onclick="closeMobile()">Coaches</a>
+  <a href="#pricing" onclick="closeMobile()">Pricing</a>
+  <a href="#calculator-hub" onclick="closeMobile()">Calculator</a>
+  <a href="#contact" onclick="closeMobile()">Contact</a>
+  <button class="btn-ghost" style="width:100%;max-width:280px" onclick="closeMobile();openLoginModal()">دخول الأعضاء 🔐</button>
+  <button class="btn-lime" style="width:100%;max-width:280px" onclick="closeMobile();document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">اشترك الآن</button>
+</div>
+
+<!-- الواجهة الرئيسية HERO -->
+<section id="hero">
+  <div class="video-container">
+    <video autoplay muted loop playsinline class="hero-video">
+      <source src="AZZ.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+  </div>
+  <div class="hero-stripes"></div>
+
+  <div class="hero-center-content">
+    <div class="hero-badges-wrap">
+      <span class="hero-eyebrow-top">⚡ RELIZANE · BERMADIA</span>
+      <span class="hero-ladies-badge">👑 فترات خاصة بالسيدات والأيروبيك</span>
+    </div>
+    <div class="hero-logo-wrap">
+      <img src="azzouz.png" alt="Azzouz Gym">
+    </div>
+    <h1 class="hero-headline">كل مجهودك اليوم.. هو <span class="lime">نسخة أقوى منك غداً</span></h1>
+    <p class="hero-desc">صالة عزوز الرياضية ببرمادية - غليزان. فضاء عصري متكامل لكمال الأجسام، اللياقة البدنية، وحصص الأيروبيك للرجال والسيدات تحت إشراف مدربين معتمدين.</p>
+    <div class="hero-actions">
+      <button class="btn-lime" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">اختر باقتك الآن ←</button>
+      <button class="btn-ghost" onclick="document.getElementById('schedule').scrollIntoView({behavior:'smooth'})">أوقات تدريب الرجال والنساء</button>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="stat-card">
+      <div class="stat-num">08:00 - 22:30</div>
+      <div class="stat-label">توقيت مرن طيلة أيام الأسبوع</div>
+    </div>
+    <div class="stat-card women-stat">
+      <div class="stat-num">GIRL POWER</div>
+      <div class="stat-label">فترات يومية مخصصة للسيدات + أيروبيك</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">أجهزة حديثة ومرافقة احترافية</div>
+    </div>
+  </div>
+</section>
+
+<!-- شريط متحرك -->
+<div class="marquee-strip" aria-hidden="true">
+  <div class="marquee-inner">
+    <span class="marquee-item">AZZOUZ GYM BERMADIA</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">PLUS FORT · PLUS SAIN · PLUS MOTIVÉ</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">كمال الأجسام واللياقة البدنية</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">حصص أيروبيك للسيدات</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">AZZOUZ GYM BERMADIA</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">PLUS FORT · PLUS SAIN · PLUS MOTIVÉ</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">كمال الأجسام واللياقة البدنية</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">حصص أيروبيك للسيدات</span><span class="marquee-dot">◆</span>
+  </div>
+</div>
+
+<!-- من نحن ABOUT -->
+<section id="about" class="section">
+  <div class="about-visual reveal">
+    <img src="azzouz aff.jpg" alt="Azzouz Gym Relizane" onerror="this.src='azzouz.png'">
+    <div class="about-badge">BERMADIA — RELIZANE</div>
+  </div>
+
+  <div class="about-content reveal">
+    <div class="tag">WHO WE ARE</div>
+    <h2 class="section-title">
+      <span class="w">PLUS FORT.</span> <span class="l">PLUS SAIN.</span><br>
+      <span class="w">PLUS MOTIVÉ.</span>
+    </h2>
+    <div class="about-text">
+      <p>صالة <strong>AZZOUZ GYM</strong> المتواجدة ببرمادية - غليزان تضع هدفك الرياضي كأولوية قصوى. نوفر لك قاعة مجهزة بأحدث آلات كمال الأجسام والكارديو مع بيئة محفزة تساعدك على الالتزام وتحقيق النتائج.</p>
+    </div>
+
+    <!-- إشارة واضحة لتدريب السيدات -->
+    <div class="ladies-highlight-box">
+      <div class="ladies-highlight-title">👑 قسم وفترات مخصصة بالكامل للسيدات (Girl Power)</div>
+      <div class="ladies-highlight-sub">
+        خصصنا أوقاتاً يومية مستقلة ومريحة لتدريب النساء، بالإضافة إلى حصص أيروبيك (Aerobics)؛ بإشراف الكوتش حبوبة لضمان الخصوصية التامة وأفضل النتائج في نحت القوام وإنقاص الوزن.
+      </div>
+    </div>
+
+    <div class="about-features">
+      <div class="feat">
+        <div class="feat-ico">🏋️</div>
+        <div><div class="feat-name">تجهيزات متكاملة</div><div class="feat-sub">أوزان حرة وأجهزة موجهة</div></div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico">🎯</div>
+        <div><div class="feat-name">تأطير احترافي</div><div class="feat-sub">مدربون للرجال ومدربة للسيدات</div></div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico">🎵</div>
+        <div><div class="feat-name">حصص أيروبيك</div><div class="feat-sub">تمارين جماعية حيوية للنساء</div></div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico">🥗</div>
+        <div><div class="feat-name">برامج غذائية</div><div class="feat-sub">متابعة للتضخيم أو التنشيف</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- البرامج التدريبية TRAINING PROGRAMS -->
+<section id="services" class="section">
+  <div class="section-header reveal">
+    <div class="tag">TRAINING PROGRAMS</div>
+    <h2 class="section-title"><span class="w">OUR</span> <span class="l">PROGRAMS</span></h2>
+    <p class="section-sub">برامج مدروسة للرجال والسيدات تناسب جميع الأهداف البدنية</p>
+  </div>
+
+  <div class="srv-grid reveal">
+    <div class="srv">
+      <div class="srv-ghost-num">01</div>
+      <div class="srv-ico">💪</div>
+      <div class="srv-name"><span class="l">BODY</span>BUILDING</div>
+      <div class="srv-title-ar">كمال الأجسام وبناء العضلات</div>
+      <p class="srv-desc">تمارين المقاومة والأوزان الحرة لزيادة الكتلة العضلية والقوة البدنية للمبتدئين والمتقدمين.</p>
+    </div>
+
+    <div class="srv ladies-srv">
+      <div class="srv-ghost-num">02</div>
+      <div class="srv-ico">👑</div>
+      <div class="srv-name"><span class="p">LADIES</span> & AEROBICS</div>
+      <div class="srv-title-ar">لياقة السيدات وحصص الأيروبيك</div>
+      <p class="srv-desc">فضاء خاص بالنساء يشمل تدريبات الأجهزة، شد الجسم، وحصص الأيروبيك الإيقاعية لحرق الدهون.</p>
+    </div>
+
+    <div class="srv">
+      <div class="srv-ghost-num">03</div>
+      <div class="srv-ico">🔥</div>
+      <div class="srv-name"><span class="l">CARDIO</span> & FAT LOSS</div>
+      <div class="srv-title-ar">الكارديو وإنقاص الوزن</div>
+      <p class="srv-desc">أجهزة مشي ودراجات وتمارين عالية الشدة لرفع اللياقة القلبية وحرق السعرات بفعالية.</p>
+    </div>
+
+    <div class="srv">
+      <div class="srv-ghost-num">04</div>
+      <div class="srv-ico">🎽</div>
+      <div class="srv-name">PERSONAL <span class="l">COACHING</span></div>
+      <div class="srv-title-ar">التوجيه والمتابعة الفردية</div>
+      <p class="srv-desc">تصميم جدول تدريبي يناسب بنيتك الجسدية مع تصحيح الأداء الحركي لتجنب الإصابات.</p>
+    </div>
+
+    <div class="srv">
+      <div class="srv-ghost-num">05</div>
+      <div class="srv-ico">🥗</div>
+      <div class="srv-name">NUTRITION <span class="l">GUIDE</span></div>
+      <div class="srv-title-ar">التغذية الرياضية الصحية</div>
+      <p class="srv-desc">نصائح وجداول غذائية متوازنة تساعدك على الوصول لوزنك المثالي بسرعة وأمان.</p>
+    </div>
+
+    <div class="srv">
+      <div class="srv-ghost-num">06</div>
+      <div class="srv-ico">🧘</div>
+      <div class="srv-name"><span class="l">FITNESS</span> & MOBILITY</div>
+      <div class="srv-title-ar">اللياقة العامة والمرونة</div>
+      <p class="srv-desc">تمارين تقوية الجذع، تحسين المرونة، واستعادة النشاط اليومي والتخلص من التوتر.</p>
+    </div>
+  </div>
+
+  <!-- دليل الأجهزة التفاعلي -->
+  <div class="zones-box reveal">
+    <div class="zones-header">
+      <div>
+        <div class="tag">EQUIPMENT ZONES</div>
+        <h3 style="font-size:1.3rem;font-weight:800;margin-top:.3rem;">تجهيزات القاعة حسب العضلة المستهدفة</h3>
+      </div>
+      <div class="zones-tabs">
+        <button class="zone-btn active" onclick="showMachines('Chest', this)">الصدر</button>
+        <button class="zone-btn" onclick="showMachines('Back', this)">الظهر</button>
+        <button class="zone-btn" onclick="showMachines('Legs', this)">الأرجل والأرداف</button>
+        <button class="zone-btn" onclick="showMachines('Arms', this)">الأكتاف والذراعين</button>
+        <button class="zone-btn" onclick="showMachines('Cardio', this)">الكارديو والأيروبيك</button>
+      </div>
+    </div>
+    <div id="machines-display" class="machines-grid"></div>
+  </div>
+</section>
+
+<!-- أوقات التدريب الأسبوعية (مطابقة للصورة المرفقة) -->
+<section id="schedule" class="section">
+  <div class="schedule-top-bar reveal">
+    <div>
+      <div class="tag">OPENING HOURS</div>
+      <h2 class="section-title"><span class="w">WEEKLY</span> <span class="l">SCHEDULE</span></h2>
+      <p class="section-sub">أوقات التدريب الأسبوعية الرسمية للرجال والنساء بصالة عزوز - برمادية غليزان</p>
+    </div>
+    <div class="live-status-pill">
+      <span id="live-dot" class="status-dot"></span>
+      <span id="live-status-text">جاري التحقق من الفترة الحالية...</span>
+    </div>
+  </div>
+
+  <div class="schedule-grid-cards reveal" id="weekly-schedule-cards">
+    
+    <!-- الأحد -->
+    <div class="day-card" data-day="0">
+      <div class="day-card-head">
+        <span class="day-name-ar">الأحد</span>
+        <span class="day-name-en">SUNDAY</span>
+      </div>
+      <div class="day-slots">
+        <div class="slot-item men-slot">
+          <span class="slot-who">☀️ الرجال (صباحاً)</span>
+          <span class="slot-time">08:00 – 15:15</span>
+        </div>
+        <div class="slot-item women-slot">
+          <span class="slot-who">👩 النساء</span>
+          <span class="slot-time">15:30 – 17:30</span>
+        </div>
+        <div class="slot-item men-slot">
+          <span class="slot-who">🌙 الرجال (مساءً)</span>
+          <span class="slot-time">17:30 – 23:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- الاثنين -->
+    <div class="day-card" data-day="1">
+      <div class="day-card-head">
+        <span class="day-name-ar">الاثنين</span>
+        <span class="day-name-en">MONDAY</span>
+      </div>
+      <div class="day-slots">
+        <div class="slot-item men-slot">
+          <span class="slot-who">☀️ الرجال (صباحاً)</span>
+          <span class="slot-time">08:00 – 15:15</span>
+        </div>
+        <div class="slot-item women-slot">
+          <span class="slot-who">👩 النساء</span>
+          <span class="slot-time">15:30 – 17:30</span>
+        </div>
+        <div class="slot-item men-slot">
+          <span class="slot-who">🌙 الرجال (مساءً)</span>
+          <span class="slot-time">17:30 – 23:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- الثلاثاء -->
+    <div class="day-card" data-day="2">
+      <div class="day-card-head">
+        <span class="day-name-ar">الثلاثاء</span>
+        <span class="day-name-en">TUESDAY</span>
+      </div>
+      <div class="day-slots">
+        <div class="slot-item men-slot">
+          <span class="slot-who">☀️ الرجال (صباحاً)</span>
+          <span class="slot-time">08:00 – 15:15</span>
+        </div>
+        <div class="slot-item women-slot">
+          <span class="slot-who">👩 النساء</span>
+          <span class="slot-time">15:30 – 17:30</span>
+        </div>
+        <div class="slot-item aerobic-slot">
+          <span class="slot-who">🎵 حصة الأيروبيك</span>
+          <span class="slot-time">15:30 – 17:30</span>
+        </div>
+        <div class="slot-item men-slot">
+          <span class="slot-who">🌙 الرجال (مساءً)</span>
+          <span class="slot-time">17:30 – 23:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- الأربعاء -->
+    <div class="day-card" data-day="3">
+      <div class="day-card-head">
+        <span class="day-name-ar">الأربعاء</span>
+        <span class="day-name-en">WEDNESDAY</span>
+      </div>
+      <div class="day-slots">
+        <div class="slot-item men-slot">
+          <span class="slot-who">☀️ الرجال (صباحاً)</span>
+          <span class="slot-time">08:00 – 15:15</span>
+        </div>
+        <div class="slot-item women-slot">
+          <span class="slot-who">👩 النساء</span>
+          <span class="slot-time">15:30 – 17:30</span>
+        </div>
+        <div class="slot-item men-slot">
+          <span class="slot-who">🌙 الرجال (مساءً)</span>
+          <span class="slot-time">17:30 – 23:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- الخميس -->
+    <div class="day-card" data-day="4">
+      <div class="day-card-head">
+        <span class="day-name-ar">الخميس</span>
+        <span class="day-name-en">THURSDAY</span>
+      </div>
+      <div class="day-slots">
+        <div class="slot-item men-slot">
+          <span class="slot-who">💪 الرجال (طيلة اليوم)</span>
+          <span class="slot-time">08:00 – 23:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- الجمعة -->
+    <div class="day-card" data-day="5">
+      <div class="day-card-head">
+        <span class="day-name-ar">الجمعة</span>
+        <span class="day-name-en">FRIDAY</span>
+      </div>
+      <div class="day-slots">
+        <div class="slot-item women-slot">
+          <span class="slot-who">👩 النساء (صباحاً)</span>
+          <span class="slot-time">08:00 – 10:00</span>
+        </div>
+        <div class="slot-item aerobic-slot">
+          <span class="slot-who">🎵 حصة الأيروبيك</span>
+          <span class="slot-time">15:00 – 18:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- السبت -->
+    <div class="day-card" data-day="6">
+      <div class="day-card-head">
+        <span class="day-name-ar">السبت</span>
+        <span class="day-name-en">SATURDAY</span>
+      </div>
+      <div class="day-slots">
+        <div class="slot-item women-slot">
+          <span class="slot-who">☀️ النساء (صباحاً)</span>
+          <span class="slot-time">09:00 – 11:00</span>
+        </div>
+        <div class="slot-item men-slot">
+          <span class="slot-who">💪 الرجال</span>
+          <span class="slot-time">11:00 – 23:00</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- المدربون (3 مدربين فقط) -->
+<section id="trainers" class="section">
+  <div class="section-header reveal" style="text-align:center">
+    <div class="tag" style="justify-content:center">OUR TEAM</div>
+    <h2 class="section-title"><span class="w">MEET THE</span> <span class="l">COACHES</span></h2>
+    <p class="section-sub" style="text-align:center">فريق التدريب المعتمد لمرافقة الرجال والسيدات في صالة عزوز</p>
+  </div>
+
+  <!-- ملاحظة: ضع صور المدربين في مجلد الموقع بأسماء coach1.jpg, coach2.jpg, coach3.jpg -->
+  <div class="trainers-grid reveal">
+    
+    <!-- المدرب 1: Coach Mohamed -->
+    <div class="trainer-card">
+      <div class="trainer-img">
+        <span class="trainer-badge">MEN'S COACH</span>
+        <img src="coach1.jpg" alt="Coach Mohamed" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="trainer-fallback" style="display:none;">
+          🏋️‍♂️
+          <span>ضع صورة coach1.jpg</span>
+        </div>
+      </div>
+      <div class="trainer-body">
+        <div>
+          <div class="trainer-name">COACH MOHAMED</div>
+          <div class="trainer-name-ar">الكوتش محمد</div>
+          <div class="trainer-spec">كمال الأجسام · الضخامة والقوة البدنية</div>
+          <div class="trainer-exp">مدرب مختص في بناء الأجسام، تصميم برامج التضخيم والتنشيف، ومتابعة الأداء الحركي السليم.</div>
+        </div>
+        <a href="https://wa.me/213672289138?text=مرحباً، أود الاستفسار عن التدريب مع الكوتش محمد" target="_blank" class="trainer-book-btn">تواصل للحجز والتدريب ←</a>
+      </div>
+    </div>
+
+    <!-- المدرب 2: Coach Fethi -->
+    <div class="trainer-card">
+      <div class="trainer-img">
+        <span class="trainer-badge">MEN'S COACH</span>
+        <img src="coach2.jpg" alt="Coach Fethi" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="trainer-fallback" style="display:none;">
+          💪
+          <span>ضع صورة coach2.jpg</span>
+        </div>
+      </div>
+      <div class="trainer-body">
+        <div>
+          <div class="trainer-name">COACH FETHI</div>
+          <div class="trainer-name-ar">الكوتش فتحي</div>
+          <div class="trainer-spec">كمال الأجسام · التحضير البدني واللياقة</div>
+          <div class="trainer-exp">مدرب معتمد في تأطير الرياضيين، برامج حرق الدهون، ورفع الكفاءة البدنية والتحمل.</div>
+        </div>
+        <a href="https://wa.me/213672289138?text=مرحباً، أود الاستفسار عن التدريب مع الكوتش فتحي" target="_blank" class="trainer-book-btn">تواصل للحجز والتدريب ←</a>
+      </div>
+    </div>
+
+    <!-- المدربة 3: Coach Habouba -->
+    <div class="trainer-card ladies-coach">
+      <div class="trainer-img">
+        <span class="trainer-badge">LADIES COACH 👑</span>
+        <img src="coach3.jpg" alt="Coach Habouba" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="trainer-fallback" style="display:none;">
+          👑
+          <span>ضع صورة coach3.jpg</span>
+        </div>
+      </div>
+      <div class="trainer-body">
+        <div>
+          <div class="trainer-name">COACH HABOUBA</div>
+          <div class="trainer-name-ar">الكوتش حبوبة (للسيدات)</div>
+          <div class="trainer-spec">لياقة السيدات · حصص الأيروبيك ونحت القوام</div>
+          <div class="trainer-exp">مدربة مختصة في تأطير فترات النساء، حصص الأيروبيك الإيقاعية، وبرامج إنقاص الوزن.</div>
+        </div>
+        <a href="https://wa.me/213672289138?text=مرحباً، أود التسجيل في تدريبات السيدات مع الكوتش حبوبة" target="_blank" class="trainer-book-btn">حجز في فترة السيدات ←</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- الباقات الرياضية PRICING (سعر + زر اشتراك فقط) -->
+<section id="pricing" class="section">
+  <div class="section-header reveal" style="text-align:center">
+    <div class="tag" style="justify-content:center">MEMBERSHIP</div>
+    <h2 class="section-title"><span class="w">GYM</span> <span class="l">PLANS</span></h2>
+    <p class="section-sub" style="text-align:center">اختر باقتك واضغط على زر الاشتراك للتسجيل الفوري عبر واتساب القاعة</p>
+  </div>
+
+  <div class="plans reveal">
+    
+    <!-- الباقة الشهرية -->
+    <div class="plan">
+      <div>
+        <div class="plan-label">MONTHLY</div>
+        <div class="plan-name">1 MONTH</div>
+        <div class="plan-name-ar">اشتراك شهري</div>
+      </div>
+      <div class="plan-price-row">
+        <span class="plan-price">2000</span>
+        <span class="plan-curr">دج</span>
+      </div>
+      <a href="https://wa.me/213672289138?text=مرحباً صالة عزوز، أريد الاشتراك في الباقة الشهرية (2000 دج)" target="_blank" class="plan-btn gb">
+        اشترك الآن 💬
+      </a>
+    </div>
+
+    <!-- باقة 3 أشهر -->
+    <div class="plan hot">
+      <div>
+        <div class="plan-label">POPULAR ★</div>
+        <div class="plan-name">3 MONTHS</div>
+        <div class="plan-name-ar">اشتراك 3 أشهر</div>
+      </div>
+      <div class="plan-price-row">
+        <span class="plan-price">5800</span>
+        <span class="plan-curr">دج</span>
+      </div>
+      <a href="https://wa.me/213672289138?text=مرحباً صالة عزوز، أريد الاشتراك في باقة 3 أشهر (5800 دج)" target="_blank" class="plan-btn lb">
+        اشترك الآن 💬
+      </a>
+    </div>
+
+    <!-- الباقة السنوية -->
+    <div class="plan">
+      <div>
+        <div class="plan-label">ANNUAL VIP</div>
+        <div class="plan-name">1 YEAR</div>
+        <div class="plan-name-ar">اشتراك عام كامل</div>
+      </div>
+      <div class="plan-price-row">
+        <span class="plan-price">20000</span>
+        <span class="plan-curr">دج</span>
+      </div>
+      <a href="https://wa.me/213672289138?text=مرحباً صالة عزوز، أريد الاشتراك في باقة العام الكامل (20000 دج)" target="_blank" class="plan-btn gb">
+        اشترك الآن 💬
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- الحاسبة الرياضية CALCULATOR -->
+<section id="calculator-hub" class="section">
+  <div class="section-header reveal" style="text-align:center">
+    <div class="tag" style="justify-content:center">FITNESS TOOLS</div>
+    <h2 class="section-title"><span class="w">CALORIE & BMI</span> <span class="l">CALCULATOR</span></h2>
+    <p class="section-sub" style="text-align:center">احسب مؤشر كتلة جسمك واحتياجك اليومي من السعرات والبروتين</p>
+  </div>
+  
+  <div class="calc-wrapper reveal">
+    <div class="form-row">
+      <div class="fgrp">
+        <label>الجنس</label>
+        <select id="calc-gender">
+          <option value="male">ذكر</option>
+          <option value="female">أنثى</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label>العمر</label>
+        <input type="number" id="calc-age" placeholder="مثال: 24" min="12" max="90">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fgrp">
+        <label>الوزن (KG)</label>
+        <input type="number" id="calc-weight" placeholder="مثال: 72" min="30" max="250">
+      </div>
+      <div class="fgrp">
+        <label>الطول (CM)</label>
+        <input type="number" id="calc-height" placeholder="مثال: 175" min="120" max="230">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fgrp">
+        <label>النشاط الأسبوعي</label>
+        <select id="calc-activity">
+          <option value="1.2">خامل (قليل الحركة)</option>
+          <option value="1.375">خفيف (1 - 3 أيام تمرين)</option>
+          <option value="1.55" selected>متوسط (3 - 5 أيام تمرين)</option>
+          <option value="1.725">عالي (6 أيام تمرين)</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label>الهدف</label>
+        <select id="calc-goal">
+          <option value="bulk">زيادة الوزن والعضلات</option>
+          <option value="maintain">المحافظة على الوزن</option>
+          <option value="cut">إنقاص الوزن وحرق الدهون</option>
+        </select>
+      </div>
+    </div>
+    <button onclick="calculateFitness()" class="btn-lime" style="width:100%">احسب النتائج الآن ⚡</button>
+    
+    <div id="calc-results" class="calc-results-grid">
+      <div class="res-card">
+        <div class="res-val" id="res-bmi">--</div>
+        <div class="res-lbl">مؤشر الكتلة (BMI)</div>
+      </div>
+      <div class="res-card">
+        <div class="res-val" id="res-calories">--</div>
+        <div class="res-lbl">السعرات اليومية</div>
+      </div>
+      <div class="res-card">
+        <div class="res-val" id="res-protein">--g</div>
+        <div class="res-lbl">البروتين اليومي</div>
+      </div>
+      <div class="res-card">
+        <div class="res-val" id="res-water">--L</div>
+        <div class="res-lbl">الماء اليومي</div>
+      </div>
+      <div class="res-status-banner" id="res-advice"></div>
+    </div>
+  </div>
+</section>
+
+<!-- شريط التحفيز CTA -->
+<div id="cta-band">
+  <div>
+    <div class="cta-band-title">VOTRE OBJECTIF, NOTRE PRIORITÉ</div>
+    <p class="cta-band-sub">هدفك أولويتنا — انضم اليوم لصالة عزوز ببرمادية غليزان</p>
+  </div>
+  <button class="btn-black" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">اشترك الآن ←</button>
+</div>
+
+<!-- الاتصال والموقع CONTACT -->
+<section id="contact" class="section">
+  <div class="contact-info reveal">
+    <div class="contact-logo">
+      <img src="azzouz.png" alt="Azzouz Gym">
+    </div>
+    <p class="contact-blurb">تواصل معنا للاستفسار عن تدريبات الرجال أو فترات السيدات وحصص الأيروبيك. فريقنا في خدمتك دائماً.</p>
+    
+    <div class="contact-item">
+      <div class="ci-ico">📍</div>
+      <div class="ci-text">برمادية — غليزان، الجزائر</div>
+    </div>
+    <div class="contact-item">
+      <div class="ci-ico">📞</div>
+      <div class="ci-text" style="direction:ltr">0672289138</div>
+    </div>
+    <div class="contact-item">
+      <div class="ci-ico">⏰</div>
+      <div class="ci-text">مفتوح يومياً من 08:00 صباحاً إلى 22:30 / 23:00</div>
+    </div>
+
+    <div class="contact-map-container">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d553.9295167798455!2d0.5756379821283548!3d35.71041323995953!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12819d002a1951dd%3A0xd33d357c320708b3!2sAzzouz%20Gym!5e1!3m2!1sfr!2sdz!4v1781230256703!5m2!1sfr!2sdz" width="100%" height="100%" style="border:0; filter: invert(90%) hue-rotate(180deg) grayscale(80%);" allowfullscreen="" loading="lazy"></iframe>
+      <a href="https://maps.google.com/?q=Azzouz+Gym+Relizane" target="_blank" class="map-dir-btn">
+        📍 موقع الصالة على الخريطة
+      </a>
+    </div>
+
+    <div class="contact-socials">
+      <a href="https://wa.me/213672289138" target="_blank" class="soc-btn">💬 WhatsApp</a>
+      <a href="https://instagram.com/azzouzgym" target="_blank" class="soc-btn">📸 ig: azzouzgym</a>
+      <a href="https://www.facebook.com/azzouzgym48" target="_blank" class="soc-btn">📘 fb: azzouzgym</a>
+      <a href="#" target="_blank" class="soc-btn">👻 snap: azzouzgym</a>
+    </div>
+  </div>
+
+  <div class="contact-form reveal">
+    <div class="form-head">
+      <div class="form-title"><span class="l">QUICK</span> REGISTRATION</div>
+      <p class="form-note">أرسل معلوماتك وسنرد عليك مباشرة عبر واتساب</p>
+    </div>
+    <div class="form-row">
+      <div class="fgrp">
+        <label>الاسم الكامل</label>
+        <input type="text" id="c-name" placeholder="أدخل اسمك">
+      </div>
+      <div class="fgrp">
+        <label>رقم الهاتف</label>
+        <input type="tel" id="c-phone" placeholder="0672289138" style="direction:ltr;text-align:right">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fgrp">
+        <label>الباقة المطلوبة</label>
+        <select id="c-plan">
+          <option value="شهري (2000 دج)">شهري — 2000 دج</option>
+          <option value="3 أشهر (5800 دج)" selected>3 أشهر — 5800 دج</option>
+          <option value="عام كامل (20000 دج)">عام كامل — 20000 دج</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label>القسم</label>
+        <select id="c-goal">
+          <option value="رجال - كمال أجسام ولياقة">رجال — كمال أجسام ولياقة</option>
+          <option value="سيدات - لياقة وأجهزة">سيدات — لياقة وأجهزة</option>
+          <option value="سيدات - حصة الأيروبيك">سيدات — حصة الأيروبيك</option>
+        </select>
+      </div>
+    </div>
+    <div class="fgrp">
+      <label>ملاحظة إضافية (اختياري)</label>
+      <textarea id="c-msg" placeholder="أي استفسار حول التوقيت أو المدربين..."></textarea>
+    </div>
+    <button type="button" onclick="sendWhatsApp()" class="btn-lime" style="width:100%">
+       إرسال عبر واتساب ←
+    </button>
+  </div>
+</section>
+
+<!-- الفوتر FOOTER -->
+<footer>
+  <a href="#hero" class="footer-logo">
+    <img src="azzouz.png" alt="Azzouz Gym">
+  </a>
+  <ul class="footer-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Programs</a></li>
+    <li><a href="#schedule">Schedule</a></li>
+    <li><a href="#trainers">Coaches</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+  <p class="footer-copy">© 2026 AZZOUZ GYM RELIZANE — DEV BY AMOUIZ SERVICES — ALL RIGHTS RESERVED</p>
+</footer>
+
+<!-- زر واتساب العائم -->
+<a href="https://wa.me/213672289138" target="_blank" class="wa-float" aria-label="تواصل معنا عبر الواتساب">
+  <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor">
+    <path d="M16.05 1.5c-8.03 0-14.55 6.52-14.55 14.56 0 2.58.67 5.09 1.94 7.33L1.5 29.5l6.29-1.89c2.15 1.15 4.59 1.75 7.11 1.75h.02c8.03 0 14.58-6.52 14.58-14.56.02-3.89-1.49-7.55-4.24-10.3S19.94 1.5 16.05 1.5zm0 24.47h-.02c-2.18 0-4.3-.59-6.17-1.69l-.44-.26-4.57 1.38 1.22-4.46-.29-.46c-1.22-1.92-1.86-4.15-1.86-6.44 0-6.66 5.42-12.08 12.08-12.08 3.23 0 6.26 1.26 8.54 3.55s3.54 5.32 3.54 8.56c-.02 6.66-5.44 12.08-12.08 12.08zm6.62-9.06c-.36-.18-2.14-1.06-2.47-1.18-.33-.12-.57-.18-.81.18-.24.36-.94 1.18-1.15 1.42-.21.24-.42.27-.79.09-1.52-.71-2.81-1.44-4.04-3.13-.31-.44.31-.41.98-1.74.12-.24.06-.45-.03-.63-.09-.18-.81-1.95-1.11-2.67-.3-.7-.6-.61-.81-.61H9.5c-.24 0-.63.09-.96.48-.33.39-1.26 1.23-1.26 3.01 0 1.78 1.29 3.51 1.47 3.75.18.24 2.56 3.91 6.2 5.48 2.37 1.02 3.21 1.09 4.38.92 1.24-.18 2.14-.87 2.44-1.72.3-.85.3-1.58.21-1.74-.08-.15-.32-.24-.68-.42z"/>
+  </svg>
+</a>
+
+<!-- بوابة دخول الأعضاء MEMBER PORTAL (مجهزة للربط مع منصة القاعة) -->
+<div id="loginModal" class="modal-overlay">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeLoginModal()">✖</button>
+    
+    <div id="login-view">
+      <div style="text-align:center;">
+        <div style="font-size: 2.2rem; margin-bottom: 0.3rem;">🔐</div>
+        <h3 style="font-family:'Barlow Condensed', sans-serif; font-size: 1.9rem; font-weight:900; font-style:italic; color:var(--lime); direction: ltr;">MEMBER PORTAL</h3>
+        <p style="color:var(--muted); font-size:0.82rem; margin-top:.3rem;">فضاء المشتركين لمتابعة الاشتراكات الشهرية والبرنامج التدريبي</p>
+      </div>
+      <div style="margin-top:1.4rem;">
+        <div class="fgrp">
+          <label>رقم العضوية (ID) أو رقم الهاتف</label>
+          <input type="text" id="login-id" placeholder="مثال: AZ-1024 أو 0770000000" style="direction:ltr;">
+        </div>
+        <div class="fgrp">
+          <label>كلمة المرور أو الرمز السري (PIN)</label>
+          <input type="password" id="login-password" placeholder="••••••••" style="direction:ltr;">
+        </div>
+      </div>
+      <button class="btn-lime" style="width:100%; margin-top: .5rem;" onclick="demoMemberLogin()">دخول إلى حسابي</button>
+      <p style="text-align: center; margin-top: 1.2rem; font-size: 0.8rem; color: var(--muted);">
+        مشترك جديد؟ <a href="javascript:void(0)" onclick="togglePortalView('register')" style="color: var(--lime); font-weight: bold; text-decoration: underline;">طلب تفعيل حساب رقمي</a>
+      </p>
+    </div>
+
+    <div id="register-view" style="display: none;">
+      <div style="text-align:center;">
+        <div style="font-size: 2.2rem; margin-bottom: 0.3rem;">⚡</div>
+        <h3 style="font-family:'Barlow Condensed', sans-serif; font-size: 1.9rem; font-weight:900; font-style:italic; color:var(--lime); direction: ltr;">ACTIVATE ACCOUNT</h3>
+        <p style="color:var(--muted); font-size:0.82rem; margin-top:.3rem;">أرسل بياناتك لربط حسابك بمنصة صالة عزوز</p>
+      </div>
+      <div class="form-row" style="margin-top:1.2rem;">
+        <div class="fgrp">
+          <label>الاسم واللقب</label>
+          <input type="text" id="reg-name" placeholder="اسمك الكامل">
+        </div>
+        <div class="fgrp">
+          <label>رقم الهاتف</label>
+          <input type="tel" id="reg-phone" placeholder="0770 00 00 00" style="direction:ltr;">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fgrp">
+          <label>الفئة</label>
+          <select id="reg-category">
+            <option value="رجال">قسم الرجال</option>
+            <option value="سيدات">قسم السيدات / أيروبيك</option>
+          </select>
+        </div>
+        <div class="fgrp">
+          <label>المدرب المشرف</label>
+          <select id="reg-coach">
+            <option value="Coach Mohamed">Coach Mohamed</option>
+            <option value="Coach Fethi">Coach Fethi</option>
+            <option value="Coach Habouba">Coach Habouba (سيدات)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-lime" style="width:100%; margin-top: .5rem;" onclick="requestAccountActivation()">إرسال طلب التفعيل للإدارة</button>
+      <p style="text-align: center; margin-top: 1.2rem; font-size: 0.8rem; color: var(--muted);">
+        لديك حساب مفعل؟ <a href="javascript:void(0)" onclick="togglePortalView('login')" style="color: var(--lime); font-weight: bold; text-decoration: underline;">تسجيل الدخول</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- لوحة تحكم اللاعب MEMBER DASHBOARD -->
+<div id="memberDashboard" class="dashboard-overlay" style="display: none;">
+  <div class="dashboard-container">
+    <div class="dash-header">
+      <button class="btn-ghost" style="padding: 0.45rem 1.1rem; font-size: 0.78rem;" onclick="logout()">تسجيل الخروج 🚪</button>
+      <img src="azzouz.png" alt="Azzouz Gym" style="height: 34px;">
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-main">
+        <div class="profile-avatar">
+          <img id="dash-img" src="azzouz.png" alt="Member">
+        </div>
+        <div>
+          <h2 id="dash-name" class="profile-name">مشترك تجريبي (معاينة)</h2>
+          <p id="dash-id" class="profile-id">ID: AZZOUZ-2026</p>
+          <div class="status-badge" id="dash-status">🟢 اشتراك ساري المفعول</div>
+        </div>
+      </div>
+      <div style="text-align:left">
+        <div style="font-size:.75rem;color:var(--muted)">المدرب المشرف:</div>
+        <div style="font-size:.95rem;font-weight:800;color:var(--lime)" id="dash-coach">COACH MOHAMED</div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-box">
+        <div class="box-icon">💳</div>
+        <div class="box-title">الباقة الحالية</div>
+        <div class="box-value lime" id="dash-plan">3 أشهر</div>
+        <div class="box-sub">5800 دج</div>
+      </div>
+      <div class="dash-box">
+        <div class="box-icon">⏳</div>
+        <div class="box-title">صلاحية الاشتراك</div>
+        <div class="box-value" id="dash-days-left">64 يوم</div>
+        <div class="box-sub" id="dash-expire">ينتهي: 2026/12/31</div>
+      </div>
+      <div class="dash-box">
+        <div class="box-icon">📅</div>
+        <div class="box-title">الحصص الشهرية المنفذة</div>
+        <div class="box-value" id="dash-attendance">14 / 24</div>
+        <div class="box-sub">حصة تدريبية هذا الشهر</div>
+      </div>
+      <div class="dash-box">
+        <div class="box-icon">📋</div>
+        <div class="box-title">البرنامج الحالي</div>
+        <div class="box-value" id="dash-program" style="font-size: 1.25rem;">PPL (تضخيم)</div>
+        <div class="box-sub">محدث من طرف المدرب</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 1. إخفاء شاشة التحميل وتشغيل الأنظمة
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('preloader').classList.add('hidden');
+  }, 700);
+  initLiveSchedule();
+  showMachines('Chest', document.querySelector('.zone-btn'));
+});
+
+// ── 2. المؤشر الذكي لأوقات الفتح والفترة الحالية (مطابق للصورة)
+function initLiveSchedule() {
+  const now = new Date();
+  const day = now.getDay(); // 0=الأحد, 1=الاثنين, 2=الثلاثاء, 3=الأربعاء, 4=الخميس, 5=الجمعة, 6=السبت
+  const hour = now.getHours() + (now.getMinutes() / 60);
+
+  // تمييز بطاقة اليوم الحالي
+  document.querySelectorAll('.day-card').forEach(card => {
+    if (parseInt(card.getAttribute('data-day')) === day) {
+      card.classList.add('today');
+      const headAr = card.querySelector('.day-name-ar');
+      if (headAr) headAr.innerHTML += ' <span class="today-tag">اليوم</span>';
+    }
+  });
+
+  const dot = document.getElementById('live-dot');
+  const text = document.getElementById('live-status-text');
+  let statusMsg = '';
+  let isOpen = false;
+
+  if (day >= 0 && day <= 3) { // الأحد إلى الأربعاء
+    if (hour >= 8 && hour < 15.25) {
+      isOpen = true;
+      statusMsg = 'مفتوح الآن — <strong style="color:var(--men)">فترة الرجال الصباحية</strong> (إلى 15:15)';
+    } else if (hour >= 15.5 && hour < 17.5) {
+      isOpen = true;
+      statusMsg = day === 2
+        ? 'مفتوح الآن — <strong style="color:var(--women)">فترة النساء + حصة الأيروبيك 🎵</strong> (إلى 17:30)'
+        : 'مفتوح الآن — <strong style="color:var(--women)">فترة النساء</strong> (إلى 17:30)';
+    } else if (hour >= 17.5 && hour < 23) {
+      isOpen = true;
+      statusMsg = 'مفتوح الآن — <strong style="color:var(--men)">فترة الرجال المسائية</strong> (إلى 23:00)';
+    }
+  } else if (day === 4) { // الخميس
+    if (hour >= 8 && hour < 23) {
+      isOpen = true;
+      statusMsg = 'مفتوح الآن — <strong style="color:var(--men)">فترة الرجال</strong> (إلى 23:00)';
+    }
+  } else if (day === 5) { // الجمعة
+    if (hour >= 8 && hour < 10) {
+      isOpen = true;
+      statusMsg = 'مفتوح الآن — <strong style="color:var(--women)">فترة النساء الصباحية</strong> (إلى 10:00)';
+    } else if (hour >= 15 && hour < 18) {
+      isOpen = true;
+      statusMsg = 'مفتوح الآن — <strong style="color:var(--aerobic)">حصة الأيروبيك للسيدات 🎵</strong> (إلى 18:00)';
+    }
+  } else if (day === 6) { // السبت
+    if (hour >= 9 && hour < 11) {
+      isOpen = true;
+      statusMsg = 'مفتوح الآن — <strong style="color:var(--women)">فترة النساء الصباحية</strong> (إلى 11:00)';
+    } else if (hour >= 11 && hour < 23) {
+      isOpen = true;
+      statusMsg = 'مفتوح الآن — <strong style="color:var(--men)">فترة الرجال</strong> (إلى 23:00)';
+    }
+  }
+
+  if (isOpen) {
+    dot.classList.remove('closed');
+    text.innerHTML = statusMsg;
+  } else {
+    dot.classList.add('closed');
+    text.innerHTML = 'الصالة <strong>مغلقة في هذه الفترة</strong> — راجع جدول التوقيت أدناه';
+  }
+}
+
+// ── 3. دليل الأجهزة التفاعلي
+function showMachines(area, btn) {
+  if (btn) {
+    document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  const machineData = {
+    'Chest': [
+      { name: 'Flat & Incline Bench', target: 'الصدر الأوسط والعلوي' },
+      { name: 'Pec Deck Fly Machine', target: 'عزل وتحديد الصدر' },
+      { name: 'Chest Press Machine', target: 'الضخامة العضلية للصدر' },
+      { name: 'Cable Crossover', target: 'الصدر السفلي والداخلي' }
+    ],
+    'Back': [
+      { name: 'Lat Pulldown Pro', target: 'العضلة العريضة (المجنص)' },
+      { name: 'Seated Row Machine', target: 'سماكة الظهر الأوسط' },
+      { name: 'T-Bar Row', target: 'قوة وكثافة الظهر' },
+      { name: 'Hyperextension Bench', target: 'أسفل الظهر' }
+    ],
+    'Legs': [
+      { name: 'Leg Press 45°', target: 'الأفخاذ والأرداف' },
+      { name: 'Squat Rack & Smith', target: 'بناء الأرجل الشامل' },
+      { name: 'Leg Extension & Curl', target: 'الأمامية والخلفية' },
+      { name: 'Glute & Hip Machine', target: 'شد ونحت الأرداف' }
+    ],
+    'Arms': [
+      { name: 'Shoulder Press', target: 'الأكتاف الأمامية والجانبية' },
+      { name: 'Lateral Raise', target: 'تكوير الكتف الجانبي' },
+      { name: 'Preacher Curl', target: 'عزل البايسبس' },
+      { name: 'Triceps Pushdown', target: 'الذراع الخلفي (الترايسبس)' }
+    ],
+    'Cardio': [
+      { name: 'Pro Treadmills', target: 'المشي والجري وحرق الدهون' },
+      { name: 'Exercise Bikes', target: 'اللياقة القلبية والتحمل' },
+      { name: 'Elliptical Cross', target: 'حرق سعرات آمن على المفاصل' },
+      { name: 'Aerobics & Step Zone', target: 'فضاء الأيروبيك والرشاقة' }
+    ]
+  };
+
+  const container = document.getElementById('machines-display');
+  const machines = machineData[area] || [];
+  container.innerHTML = machines.map(m => `
+    <div class="machine-card">
+      <div class="machine-name">${m.name}</div>
+      <div class="machine-target">${m.target}</div>
+    </div>
+  `).join('');
+}
+
+// ── 4. الحاسبة الرياضية
+function calculateFitness() {
+  const gender = document.getElementById('calc-gender').value;
+  const age = parseFloat(document.getElementById('calc-age').value);
+  const weight = parseFloat(document.getElementById('calc-weight').value);
+  const height = parseFloat(document.getElementById('calc-height').value);
+  const activity = parseFloat(document.getElementById('calc-activity').value);
+  const goal = document.getElementById('calc-goal').value;
+
+  if (!weight || !height || !age || weight <= 0 || height <= 0) {
+    alert("يرجى إدخال العمر، الوزن، والطول بشكل صحيح!");
+    return;
+  }
+
+  const bmi = (weight / ((height / 100) ** 2)).toFixed(1);
+  let bmiStatus = "";
+  if (bmi < 18.5) bmiStatus = "نقص في الوزن — ننصحك ببرنامج زيادة الكتلة العضلية.";
+  else if (bmi <= 24.9) bmiStatus = "وزن مثالي — ممتاز! حافظ على لياقتك وبنيتك العضلية.";
+  else if (bmi <= 29.9) bmiStatus = "زيادة في الوزن — ننصحك بدمج تمارين المقاومة مع الكارديو أو الأيروبيك.";
+  else bmiStatus = "سمنة — مدربونا سيساعدونك ببرنامج حرق دهون تدريجي ومضمون.";
+
+  let bmr = (10 * weight) + (6.25 * height) - (5 * age);
+  bmr += (gender === 'male') ? 5 : -161;
+
+  let targetCalories = Math.round(bmr * activity);
+  if (goal === 'bulk') targetCalories += 350;
+  else if (goal === 'cut') targetCalories -= 450;
+
+  const protein = Math.round(weight * 1.8);
+  const water = (weight * 0.038).toFixed(1);
+
+  document.getElementById('res-bmi').innerText = bmi;
+  document.getElementById('res-calories').innerText = targetCalories;
+  document.getElementById('res-protein').innerText = protein + 'g';
+  document.getElementById('res-water').innerText = water + 'L';
+  document.getElementById('res-advice').innerHTML = `<strong>النتيجة:</strong> ${bmiStatus}`;
+  document.getElementById('calc-results').classList.add('active');
+}
+
+// ── 5. إرسال استمارة الاتصال عبر واتساب
+function sendWhatsApp() {
+  const name = document.getElementById('c-name').value.trim() || 'غير محدد';
+  const phone = document.getElementById('c-phone').value.trim() || 'غير محدد';
+  const plan = document.getElementById('c-plan').value;
+  const goal = document.getElementById('c-goal').value;
+  const msg = document.getElementById('c-msg').value.trim() || 'لا توجد';
+
+  const text = encodeURIComponent(
+    `مرحباً صالة عزوز (Azzouz Gym) 💪\n` +
+    `أريد التسجيل في القاعة:\n` +
+    `• الاسم: ${name}\n` +
+    `• الهاتف: ${phone}\n` +
+    `• الباقة: ${plan}\n` +
+    `• القسم: ${goal}\n` +
+    `• ملاحظة: ${msg}`
+  );
+  window.open(`https://wa.me/213672289138?text=${text}`, '_blank');
+}
+
+// ── 6. القائمة المتجاوبة للهاتف
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+const hamBtn = document.getElementById('hamBtn');
+const mobileMenu = document.getElementById('mobileMenu');
+let menuOpen = false;
+hamBtn.addEventListener('click', () => {
+  menuOpen = !menuOpen;
+  mobileMenu.classList.toggle('open', menuOpen);
+  const spans = hamBtn.querySelectorAll('span');
+  if (menuOpen) {
+    spans[0].style.transform = 'rotate(45deg) translate(5px,5px)';
+    spans[1].style.opacity = '0';
+    spans[2].style.transform = 'rotate(-45deg) translate(5px,-5px)';
+  } else {
+    spans.forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+  }
+});
+
+function closeMobile() {
+  menuOpen = false;
+  mobileMenu.classList.remove('open');
+  hamBtn.querySelectorAll('span').forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+}
+
+// ── 7. حركات الظهور عند التمرير
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+revealEls.forEach(el => observer.observe(el));
+
+// ── 8. بوابة الأعضاء (جاهزة للربط البرمجي)
+function togglePortalView(view) {
+  document.getElementById('login-view').style.display = (view === 'register') ? 'none' : 'block';
+  document.getElementById('register-view').style.display = (view === 'register') ? 'block' : 'none';
+}
+function openLoginModal() { document.getElementById('loginModal').classList.add('active'); }
+function closeLoginModal() { document.getElementById('loginModal').classList.remove('active'); }
+
+function demoMemberLogin() {
+  // ضع هنا رابط السيرفر بعد رفعه على Render (أو اتركه localhost أثناء التجربة على جهازك)
+const PLATFORM_API_URL = 'https://azzouz-gym-api.onrender.com/api/public-portal';
+
+async function demoMemberLogin() {
+  const identifier = document.getElementById('login-id').value.trim();
+  const password = document.getElementById('login-password').value.trim();
+
+  if (!identifier || !password) {
+    alert("يرجى إدخال رقم العضوية (أو الهاتف) وكلمة المرور!");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${PLATFORM_API_URL}/member-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier, password })
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+      alert(data.message || "بيانات الدخول غير صحيحة");
+      return;
+    }
+
+    const m = data.member;
+    closeLoginModal();
+
+    // تعبئة لوحة تحكم اللاعب في الموقع بالبيانات الحقيقية من قاعدة بيانات القاعة
+    document.getElementById('dash-name').innerText = m.name;
+    document.getElementById('dash-id').innerText = "ID: " + m.id;
+    document.getElementById('dash-status').innerText = m.status;
+    document.getElementById('dash-coach').innerText = m.coach;
+    document.getElementById('dash-plan').innerText = m.plan;
+    document.getElementById('dash-days-left').innerText = m.daysLeft + " يوم متبقي";
+    document.getElementById('dash-expire').innerText = "ينتهي: " + m.expireDate;
+    document.getElementById('dash-attendance').innerText = m.attendanceCount + " حصة هذا الشهر";
+    document.getElementById('dash-program').innerText = m.notes;
+
+    if (m.photo) {
+      document.getElementById('dash-img').src = m.photo.startsWith('http')
+        ? m.photo
+        : `http://localhost:5000${m.photo}`;
+    }
+
+    document.getElementById('memberDashboard').style.display = 'block';
+  } catch (err) {
+    alert("تعذر الاتصال بخادم المنصة حالياً، تأكد من تشغيل السيرفر.");
+  }
+}
+}
+
+function requestAccountActivation() {
+  const name = document.getElementById('reg-name').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const category = document.getElementById('reg-category').value;
+  const coach = document.getElementById('reg-coach').value;
+
+  if (!name || !phone) {
+    alert("يرجى إدخال الاسم ورقم الهاتف!");
+    return;
+  }
+  const text = encodeURIComponent(
+    `مرحباً إدارة صالة عزوز 🔐\nأود تفعيل حسابي الرقمي في بوابة الأعضاء:\n• الاسم: ${name}\n• الهاتف: ${phone}\n• الفئة: ${category}\n• المدرب: ${coach}`
+  );
+  window.open(`https://wa.me/213672289138?text=${text}`, '_blank');
+}
+
+function logout() {
+  document.getElementById('memberDashboard').style.display = 'none';
+}
+</script>
+
+</body>
+</html>

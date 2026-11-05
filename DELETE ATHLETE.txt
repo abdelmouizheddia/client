@@ -1,0 +1,2 @@
+cd "D:\WEB IDEE ITO GYM\COMPLEXE PROJET WEB\AZZOUZ GYM --v4\server"
+npx prisma studio

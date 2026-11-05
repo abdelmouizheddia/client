@@ -1,0 +1,331 @@
+const express = require('express');
+const prisma = require('../prismaClient');
+const { requireAuth } = require('../middleware/auth');
+const { photoUpload, documentUpload } = require('../middleware/upload');
+const { generateMemberCode, calculateAge, addDuration } = require('../utils/helpers');
+const { archiveMember } = require('../utils/archiveService');
+const { refreshStatuses, recomputeMemberStatus } = require('../utils/statusService');
+const QRCode = require('qrcode');
+const { logAction } = require('../utils/auditLogger');
+
+// داخل دالة إضافة عضو جديد بعد prisma.member.create:
+await logAction(req, 'ADD_MEMBER', `تسجيل عضو جديد: ${member.firstName} ${member.lastName} (${member.memberCode})`);
+
+// وداخل دالة إضافة اشتراك بعد prisma.subscription.create:
+await logAction(req, 'ADD_SUBSCRIPTION', `تفعيل اشتراك (${subscription.planType}) للعضو رقم #${subscription.memberId}`, subscription.price);
+const router = express.Router();
+router.use(requireAuth);
+
+function serializeMember(member) {
+  const latestSub = member.subscriptions?.[0];
+  return {
+    ...member,
+    age: calculateAge(member.birthDate),
+    currentPlan: latestSub?.planType || null,
+    subscriptionEndDate: latestSub?.endDate || null,
+  };
+}
+
+// قائمة الأعضاء مع البحث والتصفية
+router.get('/', async (req, res) => {
+  await refreshStatuses();
+  const { search, sportId, gender, status, dateFrom, dateTo, page = 1, limit = 20 } = req.query;
+
+  const where = { isArchived: false };
+
+  // المدربة ترى العضوات (الإناث) فقط
+  if (req.isCoach) {
+    where.gender = 'female';
+  } else if (gender) {
+    where.gender = gender;
+  }
+
+  if (search) {
+    where.OR = [
+      { firstName: { contains: search } },
+      { lastName: { contains: search } },
+      { memberCode: { contains: search } },
+      { phone: { contains: search } },
+    ];
+  }
+  if (sportId) where.sportId = Number(sportId);
+  if (status) where.status = status;
+  if (dateFrom || dateTo) {
+    where.registrationDate = {};
+    if (dateFrom) where.registrationDate.gte = new Date(dateFrom);
+    if (dateTo) where.registrationDate.lte = new Date(dateTo);
+  }
+
+  const take = Number(limit);
+  const skip = (Number(page) - 1) * take;
+
+  const [members, total] = await Promise.all([
+    prisma.member.findMany({
+      where,
+      include: {
+        sport: true,
+        coach: true,
+        subscriptions: { orderBy: { endDate: 'desc' }, take: 1 },
+      },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take,
+    }),
+    prisma.member.count({ where }),
+  ]);
+
+  res.json({
+    data: members.map(serializeMember),
+    total,
+    page: Number(page),
+    totalPages: Math.ceil(total / take) || 1,
+  });
+});
+
+// ملف عضو كامل
+router.get('/:id', async (req, res) => {
+  const member = await prisma.member.findUnique({
+    where: { id: Number(req.params.id) },
+    include: {
+      sport: true,
+      coach: true,
+      subscriptions: { orderBy: { startDate: 'desc' } },
+      attendances: { orderBy: { date: 'desc' }, take: 50 },
+      achievements: { orderBy: { date: 'desc' } },
+      documents: { orderBy: { createdAt: 'desc' } },
+    },
+  });
+  if (!member) return res.status(404).json({ message: 'العضو غير موجود' });
+  res.json(serializeMember(member));
+});
+
+// إنشاء عضو جديد مع إرسال رسالة ترحيبية عبر الواتساب
+router.post('/', photoUpload.single('photo'), async (req, res) => {
+  try {
+    const {
+      firstName, lastName, birthDate, gender, phone, email, address,
+      sportId, coachId, registrationDate, coachNotes, planType, price,
+      rfidTag, notificationsOptIn,
+    } = req.body;
+
+    if (!firstName || !lastName || !birthDate || !gender) {
+      return res.status(400).json({ message: 'يرجى تعبئة الحقول الأساسية: الاسم، اللقب، تاريخ الميلاد، الجنس' });
+    }
+
+    const regDate = registrationDate ? new Date(registrationDate) : new Date();
+
+    const member = await prisma.member.create({
+      data: {
+        memberCode: `TEMP-${Date.now()}`,
+        firstName, lastName,
+        birthDate: new Date(birthDate),
+        gender, phone, email, address,
+        sportId: sportId ? Number(sportId) : null,
+        coachId: coachId ? Number(coachId) : null,
+        registrationDate: regDate,
+        coachNotes,
+        photo: req.file ? `/uploads/photos/${req.file.filename}` : null,
+        status: 'active',
+        rfidTag: rfidTag || null,
+        notificationsOptIn: notificationsOptIn === 'true' || notificationsOptIn === true,
+      },
+    });
+
+    const finalCode = generateMemberCode(member.id);
+    await prisma.member.update({ where: { id: member.id }, data: { memberCode: finalCode } });
+
+    // ----------- بداية التعديل: إنشاء الاشتراك وإرسال الواتساب مع صورة QR -----------
+    let endDate = null;
+    
+    if (planType && price !== undefined) {
+      endDate = addDuration(regDate, planType);
+      
+      // 1. تسجيل الاشتراك في قاعدة البيانات
+      await prisma.subscription.create({
+        data: { memberId: member.id, planType, price: Number(price), startDate: regDate, endDate, status: 'active' },
+      });
+    }
+
+    // ملاحظة: تأكد أنك قمت بجلب `fullMember` قبل هذا الجزء لكي نستخدم `notificationsOptIn`
+    const fullMember = await prisma.member.findUnique({
+      where: { id: member.id },
+      include: { sport: true, coach: true, subscriptions: true },
+    });
+
+    // 2. 📱 إرسال رسالة الترحيب مع الإجازة الرياضية (QR) عبر الواتساب 📱
+    if (phone && fullMember && fullMember.notificationsOptIn) {
+      try {
+        // تنظيف رقم الهاتف وتجهيزه للصيغة الدولية (تحويل 055 إلى 21355)
+        let waPhone = phone.replace(/\D/g, '');
+        if (waPhone.startsWith('0') && waPhone.length === 10) {
+          waPhone = '213' + waPhone.substring(1);
+        }
+
+        // تنسيق التاريخ ليظهر بشكل مقروء وجميل (مثال: 15 أوت 2026)
+        const formattedEndDate = endDate
+          ? new Date(endDate).toLocaleDateString('ar-DZ', {
+              year: 'numeric', month: 'long', day: 'numeric'
+            })
+          : 'غير محدد';
+          
+        // ترجمة نوع الاشتراك للغة العربية
+        // ترجمة وتحديد نوع الاشتراك بدقة بناءً على القيمة المرسلة من الواجهة
+        let planName = 'غير محدد';
+        
+        switch (String(planType).toLowerCase()) {
+          case 'monthly':
+          case '1_month':
+          case '1':
+            planName = 'شهر واحد';
+            break;
+          case 'quarterly':
+          case '3_months':
+          case '3':
+            planName = '3 أشهر';
+            break;
+          case 'semi_annual':
+          case '6_months':
+          case '6':
+            planName = '6 أشهر';
+            break;
+          case 'yearly':
+          case '1_year':
+          case '12':
+            planName = 'سنة كاملة';
+            break;
+          case 'weekly':
+          case '1_week':
+            planName = 'أسبوع';
+            break;
+          default:
+            // إذا كانت الواجهة ترسل الكلمة بالعربية مباشرة، نضعها كما هي
+            planName = planType || 'غير محدد'; 
+        }
+
+        // صياغة نص الرسالة الأنيقة
+        const message = 
+`مرحباً بك السيد(ة) *${firstName} ${lastName}* 🏋️‍♂️
+شكراً على اختياركم لنا والتسجيل لدى قاعة *AZZOUZ GYM*
+
+✅ تم تفعيل اشتراكك في العضوية لدى النادي.
+📅 ينتهي اشتراككم يوم: *${formattedEndDate}*
+⏳ مدة الاشتراك: *${planName}*
+🆔 رقم العضوية: *${finalCode}*
+
+مرفق مع هذه الرسالة الإجازة الرياضية (رمز الدخول) الخاصة بكم، يرجى الاحتفاظ بها لمسحها عند الدخول.
+
+استفيدوا من مزايا القاعة العصرية! 🌟
+يمكنكم الاطلاع على الموقع الرسمي للقاعة:
+🌐 https://abdelmouizheddia.github.io/AZGYM/`;
+
+        // توليد رمز الدخول (QR) كصورة بخلفية بيضاء واضحة
+        const qrDataObj = JSON.stringify({ type: 'BTS_MEMBER', code: finalCode });
+        const qrImageBase64 = await QRCode.toDataURL(qrDataObj, {
+           width: 500, // حجم كبير وواضح للصورة
+           margin: 2,
+           color: { dark: '#000000', light: '#ffffff' }
+        });
+
+        // إرسال الصورة النصية للواتساب
+        await whatsapp.sendImageMessage(waPhone, qrImageBase64, message);
+        console.log(`💬 تم إرسال الإجازة الرياضية كصورة بنجاح إلى: ${waPhone}`);
+
+      } catch (waError) {
+        console.warn(`⚠️ تعذر إرسال الواتساب (تأكد من ربط الجهاز أو صحة الرقم): ${waError.message}`);
+      }
+    }
+    // ----------- نهاية التعديل -----------
+
+    res.status(201).json(serializeMember(fullMember));
+  } catch (err) {
+    if (err.code === 'P2002' && err.meta?.target?.includes('rfidTag')) {
+      return res.status(409).json({ message: 'رقم RFID هذا مسجَّل لعضو آخر. يرجى التحقق.' });
+    }
+    res.status(400).json({ message: 'تعذر إضافة العضو', error: err.message });
+  }
+});
+
+// تعديل بيانات عضو
+router.put('/:id', photoUpload.single('photo'), async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const {
+      firstName, lastName, birthDate, gender, phone, email, address,
+      sportId, coachId, coachNotes, status, rfidTag, notificationsOptIn,
+    } = req.body;
+
+    const data = { firstName, lastName, gender, phone, email, address, coachNotes };
+    if (birthDate) data.birthDate = new Date(birthDate);
+    if (sportId !== undefined) data.sportId = sportId ? Number(sportId) : null;
+    if (coachId !== undefined) data.coachId = coachId ? Number(coachId) : null;
+    if (status) data.status = status;
+    if (req.file) data.photo = `/uploads/photos/${req.file.filename}`;
+    if (rfidTag !== undefined) data.rfidTag = rfidTag || null;
+    if (notificationsOptIn !== undefined) data.notificationsOptIn = notificationsOptIn === 'true' || notificationsOptIn === true;
+
+    const member = await prisma.member.update({ where: { id }, data });
+    res.json(member);
+  } catch (err) {
+    if (err.code === 'P2002' && err.meta?.target?.includes('rfidTag')) {
+      return res.status(409).json({ message: 'رقم RFID هذا مسجَّل لعضو آخر. يرجى التحقق.' });
+    }
+    res.status(400).json({ message: 'تعذر تحديث بيانات العضو', error: err.message });
+  }
+});
+
+// رفع مستندات إضافية (صور / PDF)
+router.post('/:id/documents', documentUpload.array('files', 10), async (req, res) => {
+  try {
+    const memberId = Number(req.params.id);
+    const created = [];
+    for (const file of req.files || []) {
+      const fileType = file.mimetype === 'application/pdf' ? 'pdf' : 'image';
+      const doc = await prisma.document.create({
+        data: {
+          memberId,
+          fileUrl: `/uploads/documents/${file.filename}`,
+          fileType,
+          label: req.body.label || null,
+        },
+      });
+      created.push(doc);
+    }
+    res.status(201).json(created);
+  } catch (err) {
+    res.status(400).json({ message: 'تعذر رفع المستندات', error: err.message });
+  }
+});
+
+router.delete('/documents/:docId', async (req, res) => {
+  try {
+    await prisma.document.delete({ where: { id: Number(req.params.docId) } });
+    res.json({ message: 'تم حذف المستند' });
+  } catch (err) {
+    res.status(400).json({ message: 'تعذر حذف المستند', error: err.message });
+  }
+});
+
+// تحديث الحالة (نشط / موقوف) يدويًا
+router.patch('/:id/status', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const { status } = req.body;
+    const member = await prisma.member.update({ where: { id }, data: { status } });
+    res.json(member);
+  } catch (err) {
+    res.status(400).json({ message: 'تعذر تحديث الحالة', error: err.message });
+  }
+});
+
+// نقل عضو إلى الأرشيف (بدلاً من الحذف النهائي)
+router.delete('/:id', async (req, res) => {
+  try {
+    await archiveMember(Number(req.params.id), 'manual');
+    res.json({ message: 'تم نقل العضو إلى الأرشيف بنجاح' });
+  } catch (err) {
+    res.status(400).json({ message: 'تعذر أرشفة العضو', error: err.message });
+  }
+  
+});
+
+module.exports = router;

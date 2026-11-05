@@ -1,0 +1,173 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'IBM Plex Sans Arabic', 'Tajawal', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: #F4F6FA;
+  color: #0A1F44;
+}
+
+html.dark body {
+  background-color: #061530;
+  color: #EEF2F9;
+}
+
+h1, h2, h3, h4, h5, .font-display {
+  font-family: 'Cairo', 'Tajawal', sans-serif;
+}
+
+.font-mono, .tabular {
+  font-family: 'JetBrains Mono', monospace;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* ===== Glassmorphism ===== */
+.glass {
+  background: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+html.dark .glass {
+  background: rgba(15, 33, 64, 0.55);
+  border: 1px solid rgba(212, 175, 55, 0.12);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid rgba(10, 31, 68, 0.06);
+}
+html.dark .glass-panel {
+  background: rgba(10, 26, 53, 0.72);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.gold-edge {
+  position: relative;
+}
+.gold-edge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(120deg, rgba(212,175,55,0.7), rgba(212,175,55,0.05) 35%, rgba(212,175,55,0.05) 65%, rgba(212,175,55,0.7));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(10, 31, 68, 0.18);
+  border-radius: 8px;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.25);
+}
+
+/* ===== Focus visibility ===== */
+:focus-visible {
+  outline: 2px solid #D4AF37;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Print styles for virtual cards / reports */
+@media print {
+  body { background: white !important; }
+  .no-print { display: none !important; }
+  .md\:mr-64 { margin-right: 0 !important; }
+}
+/* ════════════════════════════════════════════════════════════════
+   AZZOUZ GYM THEME OVERRIDE (CARBON BLACK & NEON LIME #DDF500)
+════════════════════════════════════════════════════════════════ */
+:root {
+  --azzouz-black:  #050505;
+  --azzouz-ink:    #0E0E0E;
+  --azzouz-carbon: #161616;
+  --azzouz-dark:   #1E1E1E;
+  --azzouz-edge:   #2E2E2E;
+  --azzouz-lime:   #ddf500;
+  --azzouz-pink:   #ff2a85;
+}
+
+/* 1. تحويل الخلفيات الكحلية والداكنة إلى الأسود الكربوني المطابق للموقع */
+body,
+.dark body,
+.bg-slate-900,
+.bg-slate-950,
+.bg-gray-900,
+.bg-\[\#0f172a\],
+.bg-\[\#1e293b\] {
+  background-color: var(--azzouz-black) !important;
+  color: #ffffff !important;
+}
+
+/* 2. تحويل البطاقات والقائمة الجانبية (Sidebar) */
+aside,
+.bg-slate-800,
+.dark .bg-slate-800,
+.bg-white.dark\:bg-slate-800 {
+  background-color: var(--azzouz-carbon) !important;
+  border-color: var(--azzouz-edge) !important;
+}
+
+/* 3. استبدال اللون الذهبي (#D4AF37) باللون الفسفوري (#ddf500) */
+.text-\[\#D4AF37\],
+.text-amber-400,
+.text-amber-500,
+.text-yellow-500 {
+  color: var(--azzouz-lime) !important;
+}
+
+.bg-\[\#D4AF37\],
+.bg-amber-500,
+.bg-yellow-500 {
+  background-color: var(--azzouz-lime) !important;
+  color: var(--azzouz-black) !important;
+  font-weight: 800 !important;
+}
+
+.border-\[\#D4AF37\],
+.border-amber-500 {
+  border-color: var(--azzouz-lime) !important;
+}
+
+/* 4. تحسين شكل الأزرار النشطة في القائمة الجانبية (مثل لوحة التحكم وحسابات المدربات) */
+aside a.active,
+aside button.active {
+  background: rgba(221, 245, 0, 0.12) !important;
+  color: var(--azzouz-lime) !important;
+  border-right: 4px solid var(--azzouz-lime) !important;
+}
