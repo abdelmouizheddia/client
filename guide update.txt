@@ -1,0 +1,39 @@
+عندما تريد تغيير الواجهة الأمامية (Frontend)
+مثلاً:
+- تغيير ألوان وتصميم لوحة التحكم.
+- إضافة صفحة جديدة.
+- تعديل واجهة الأعضاء أو المدربين.
+- تغيير الأزرار والقوائم.
+- تحسين تجربة المستخدم.
+تعمل محلياً داخل مجلد client كالمعتاد، ثم تختبر التغييرات:
+npm run dev
+
+
+وبعد التأكد من نجاح التعديل، نفّذ:
+npm run build
+
+
+إذا نجح البناء، ارفع التعديلات إلى GitHub:
+git add -A
+git commit -m "Update frontend design"
+git push origin main
+
+
+احفظ هذا التسلسل للعمل المستقبلي
+روتين تحديث الواجهة الأمامية
+cd "D:\WEB IDEE ITO GYM\azzouz gym UPDATED PLATFORM\client"
+
+npm run dev
+
+
+بعد الانتهاء من التعديل والاختبار:
+npm run build
+
+git add -A
+
+git commit -m "Update frontend"
+
+git push origin main
+
+
+Netlify يتولى بقية العملية تلقائياً

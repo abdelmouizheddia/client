@@ -2,7 +2,22 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
 
+export function getImageUrl(path?: string | null): string | null {
+  if (!path) return null;
+
+  // لا نغيّر الروابط الكاملة أو المعاينات المحلية
+  if (
+    /^https?:\/\//i.test(path) ||
+    path.startsWith('blob:') ||
+    path.startsWith('data:')
+  ) {
+    return path;
+  }
+
+  return `${API_ORIGIN}${path.startsWith('/') ? '' : '/'}${path}`;
+}
 const client = axios.create({
   baseURL: API_BASE_URL,
 });
