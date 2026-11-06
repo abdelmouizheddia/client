@@ -15,7 +15,7 @@ const sizeMap = {
 };
 
 export default function Avatar({ src, firstName, lastName, size = 'md' }: AvatarProps) {
-  // ✅ التعديل: ربط مسار الصورة المحلي بالسيرفر السحابي
+  // إضافة رابط السيرفر إذا كان المسار يبدأ بـ /uploads
   const API_URL = 'https://azzouz-gym-api.onrender.com';
   const imageUrl = src?.startsWith('/uploads') ? `${API_URL}${src}` : src;
 
