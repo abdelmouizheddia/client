@@ -245,3 +245,47 @@ table {
     padding-right: 0.75rem !important;
   }
 }
+
+/* SIDEBAR WIDTH ALIGNMENT FIX */
+@media (min-width: 768px) {
+  aside.no-print {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: auto !important;
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+    flex: 0 0 260px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  aside.no-print > div {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .md\:mr-64 {
+    margin-right: 260px !important;
+    margin-left: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .md\:mr-64 main {
+    width: 100% !important;
+    max-width: 1500px !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+  }
+}
