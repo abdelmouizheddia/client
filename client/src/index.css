@@ -256,7 +256,7 @@ table {
     margin-right: 260px !important;
     width: calc(100% - 260px) !important;
   }
-}
+
 
 /* 3. منع الخلفية الداكنة من التسرب خارج القائمة الجانبية في الوضع المضيء */
 #root > div {
