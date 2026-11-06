@@ -93,7 +93,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
         {/* 🔴 زر الموقع الإلكتروني 🔴 */}
         <div className="pt-4 mt-4 border-t border-white/10">
           <a
-            href="https://azzgymplatform.netlify.app"
+            href="https://azzouzgym.netlify.app/"
             target="_blank"
             rel="noopener noreferrer"
             className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-150 text-white/70 hover:bg-white/10 hover:text-[#ddf500]"
