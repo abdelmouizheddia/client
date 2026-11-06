@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { authApi } from '../api/resources';
+import axios from 'axios'; // تم إضافة axios للاتصال المباشر بمسار تسجيل الخروج
 
 export type UserRole = 'admin' | 'coach';
 
@@ -13,7 +14,7 @@ interface AuthState {
   commissionRate: number;
   loading: boolean;
   login: (password: string, username?: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>; // تم تحويلها إلى Promise لأنها أصبحت async
   refreshProfile: () => Promise<void>;
 }
 
@@ -70,7 +71,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const logout = useCallback(() => {
+  // تعديل دالة تسجيل الخروج لإرسال إشعار للخادم قبل مسح البيانات
+  const logout = useCallback(async () => {
+    try {
+      const currentToken = localStorage.getItem(STORE.token);
+      if (currentToken) {
+        await axios.post('https://azzouz-gym-api.onrender.com/api/auth/logout', {}, {
+          headers: { Authorization: `Bearer ${currentToken}` }
+        });
+      }
+    } catch (e) {
+      // نتجاهل الخطأ إذا انقطع الاتصال بالإنترنت، المهم أن نخرجه محلياً
+    }
+
     Object.values(STORE).forEach((k) => localStorage.removeItem(k));
     setToken(null);
     setRole('admin');

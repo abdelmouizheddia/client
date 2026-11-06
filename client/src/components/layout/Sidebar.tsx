@@ -2,7 +2,7 @@ import { getImageUrl } from '../../api/client';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Users, CreditCard, CalendarCheck, Wallet, Banknote,
-  UserCog, Trophy, FileBarChart2, Archive, Settings, X, Dumbbell, UserCircle, Globe, ExternalLink 
+  UserCog, Trophy, FileBarChart2, Archive, Settings, X, Dumbbell, UserCircle, Globe, ExternalLink, Activity 
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -20,6 +20,7 @@ const ADMIN_NAV = [
   { to: '/reports', label: 'التقارير', icon: FileBarChart2 },
   { to: '/archive', label: 'الأرشيف', icon: Archive },
   { to: '/settings', label: 'الإعدادات', icon: Settings },
+  { to: '/activities', label: 'سجل النشاطات', icon: Activity },
 ];
 
 const COACH_NAV = [
