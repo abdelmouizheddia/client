@@ -1,7 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+html, body, #root {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
 :root {
   color-scheme: light;
 }
@@ -172,4 +176,47 @@ aside button.active {
   background: rgba(221, 245, 0, 0.12) !important;
   color: var(--azzouz-lime) !important;
   border-right: 4px solid var(--azzouz-lime) !important;
+}
+/* تغيير الألوان الرئيسية للقائمة والبطاقات */
+:root {
+  --color-primary: #ddf500; /* الأصفر الفسفوري */
+  --color-primary-hover: #c4d900;
+  --bg-sidebar: #1E1E1E; /* الرمادي الداكن */
+  --bg-dark: #161616;
+}
+
+/* تطبيق الرمادي الداكن على القائمة الجانبية والخلفية الداكنة */
+.bg-navy-900, .dark .bg-navy-900,
+.bg-slate-900, .bg-\[\#0f172a\] {
+  background-color: var(--bg-sidebar) !important;
+}
+
+body.dark {
+  background-color: var(--bg-dark) !important;
+}
+
+/* استبدال الأزرق والذهبي بالأصفر */
+.text-\[\#D4AF37\], .text-amber-500, .text-blue-600 {
+  color: var(--color-primary) !important;
+}
+
+.bg-\[\#D4AF37\],
+.bg-amber-500,
+.bg-blue-600 {
+  background-color: var(--color-primary) !important;
+  color: #161616 !important; /* نص أسود على زر أصفر */
+}
+
+.border-\[\#D4AF37\], .border-blue-600 {
+  border-color: var(--color-primary) !important;
+}
+
+/* تحديد لون النص في القائمة الجانبية */
+aside a, aside button {
+  color: #e2e8f0 !important;
+}
+aside a.active, aside button.active {
+  background-color: rgba(221, 245, 0, 0.1) !important;
+  color: var(--color-primary) !important;
+  border-right-color: var(--color-primary) !important;
 }

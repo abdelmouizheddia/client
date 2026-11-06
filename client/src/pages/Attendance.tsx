@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Search, QrCode, UserCheck, CalendarCheck, Camera, CameraOff, Nfc } from 'lucide-react';
+import { Search, QrCode, UserCheck, CalendarCheck, Camera, CameraOff, Nfc, SwitchCamera } from 'lucide-react';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
 } from 'recharts';
@@ -22,8 +22,8 @@ type CheckInMode = 'manual' | 'qr' | 'rfid';
 type Range = 'daily' | 'weekly' | 'monthly';
 
 const tooltipStyle = {
-  background: 'rgba(10,31,68,0.92)',
-  border: '1px solid rgba(212,175,55,0.3)',
+  background: 'rgba(22, 22, 22, 0.92)',
+  border: '1px solid rgba(221, 245, 0, 0.3)',
   borderRadius: 12,
   color: '#fff',
   fontSize: 12,
@@ -41,12 +41,15 @@ export default function Attendance() {
   const debouncedSearch = useDebounce(search, 350);
   const [checkingIn, setCheckingIn] = useState(false);
 
-  // وضع QR — الإصلاح: تجهيز العنصر دائماً في DOM قبل بدء المسح
+  // وضع QR
   const [scanning, setScanning] = useState(false);
   const [cameraError, setCameraError] = useState('');
   const scannerRef = useRef<any>(null);
+  
+  // حالة اتجاه الكاميرا (خلفية افتراضياً)
+  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
 
-  // وضع RFID — يستمع للوحة المفاتيح ويجمع الأحرف حتى يُضغط Enter
+  // وضع RFID
   const rfidBufferRef = useRef('');
   const rfidTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -100,85 +103,70 @@ export default function Attendance() {
     }
   }
 
-  // ─── QR Scanner (إجبار استخدام الكاميرا المدمجة للابتوب) ──────────────────
-  async function startScanner() {
+  // ─── QR Scanner ──────────────────────────────────────────────────
+  async function startScanner(forcedFacingMode?: 'environment' | 'user') {
     setCameraError('');
-    // نظهر العنصر أولاً لكي يأخذ أبعاده الطبيعية في شجرة DOM
     setScanning(true);
+    const activeFacingMode = forcedFacingMode || facingMode;
 
     setTimeout(async () => {
       try {
         const { Html5Qrcode } = await import('html5-qrcode');
-        const cameras = await Html5Qrcode.getCameras();
         
-        if (!cameras || cameras.length === 0) {
-          setCameraError('لا توجد كاميرا متاحة على هذا الجهاز.');
-          setScanning(false);
-          return;
+        // إيقاف الماسح القديم قبل تشغيل الجديد لتجنب التعارض
+        if (scannerRef.current) {
+          try { await scannerRef.current.stop(); } catch { /* ignore */ }
+          try { scannerRef.current.clear(); } catch { /* ignore */ }
         }
-        
-        // 1. البحث الدقيق عن الكاميرا المدمجة للابتوب عبر اسمها البرمجي
-        const builtInCamera = cameras.find((c: any) =>
-          c.label?.toLowerCase().includes('integrated') ||
-          c.label?.toLowerCase().includes('built-in') ||
-          c.label?.toLowerCase().includes('internal') ||
-          c.label?.toLowerCase().includes('front')
-        );
-
-        // 2. إذا وجدها سيستخدمها، وإذا لم يجدها بالاسم سيختار إجبارياً الكاميرا الأولى (التي يضعها النظام ككاميرا أساسية)
-        const cameraId = builtInCamera ? builtInCamera.id : cameras[0].id;
 
         const instance = new Html5Qrcode('qr-reader');
         scannerRef.current = instance;
 
-        // التشغيل
         await instance.start(
-          cameraId,
+          { facingMode: activeFacingMode },
           { fps: 10, qrbox: { width: 230, height: 230 } },
           async (decoded: string) => {
-            try { await instance.pause(); } catch { /* ignore */ }
+            try { instance.pause(); } catch { /* ignore */ }
             
             let finalMemberCode = decoded.trim();
             
-            // 1. محاولة ترجمة النص ككائن JSON لاستخراج الرمز الصافي
             try {
               const parsedData = JSON.parse(finalMemberCode);
-              // إذا كان الكائن يحتوي على كلمة code، استخرجها
               if (parsedData && parsedData.code) {
                 finalMemberCode = parsedData.code;
               }
-            } catch (e) {
-              // إذا لم يكن بصيغة JSON (مثلاً مسح رمز QR عادي بالخطأ)، اتركه كما هو
-            }
+            } catch { /* ignore */ }
 
-            // 2. إرسال الرمز الصافي (مثل AZG-00057) إلى الخادم
             try { 
               await checkIn({ memberCode: finalMemberCode }, 'qr'); 
-            } catch { /* الخطأ أو النجاح سيعالجه checkIn ويظهر إشعاراً للمستخدم */ }
+            } catch { /* ignore */ }
             
             setTimeout(() => {
               try { instance.resume(); } catch { /* ignore */ }
             }, 1500);
           },
-          () => {} // نتجاهل أخطاء عدم العثور على رمز أثناء المسح
+          () => {} 
         );
       } catch (err: any) {
         setScanning(false); 
-        
         const msg = typeof err === 'string' ? err : (err?.message || '');
-        
         if (msg.includes('NotAllowedError') || msg.includes('Permission')) {
-          setCameraError('رُفض الوصول للكاميرا. تأكد من إعطاء الصلاحية في المتصفح ومن إعدادات الخصوصية في Windows.');
-        } else if (msg.includes('NotFoundError') || msg.includes('Camera not found') || msg.includes('device not found')) {
-          setCameraError('لا توجد كاميرا متاحة أو معرفة على هذا الجهاز.');
-        } else if (msg.includes('NotReadableError') || msg.includes('track start')) {
-          setCameraError('الكاميرا قيد الاستخدام حالياً من قبل تطبيق آخر (مثل Zoom أو Meet).');
+          setCameraError('رُفض الوصول للكاميرا. تأكد من إعطاء الصلاحية في المتصفح.');
         } else {
-          setCameraError(`السبب التقني: ${msg || 'فشل في تهيئة العتاد'}`);
+          setCameraError('لا توجد كاميرا متاحة أو متوافقة على هذا الجهاز.');
         }
       }
     }, 150); 
   }
+
+  // دالة تبديل الكاميرا (للخلفية / الأمامية)
+  const toggleCamera = () => {
+    const newMode = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(newMode);
+    if (scanning) {
+       startScanner(newMode);
+    }
+  };
 
   async function stopScanner() {
     try { await scannerRef.current?.stop(); } catch { /* ignore */ }
@@ -200,7 +188,6 @@ export default function Attendance() {
     if (mode !== 'rfid') return;
 
     function handleKeyDown(e: KeyboardEvent) {
-      // مُدخَلات لوحة المفاتيح العادية لا تُؤثر (مثلاً Tab، Alt)
       if (e.key === 'Enter' || e.key === '\n') {
         const tag = rfidBufferRef.current.trim();
         rfidBufferRef.current = '';
@@ -211,9 +198,7 @@ export default function Attendance() {
         return;
       }
       if (e.key.length === 1) {
-        // أي حرف واحد مطبوع — نضيفه للمخزن المؤقت
         rfidBufferRef.current += e.key;
-        // إذا مضت 300ms دون Enter، نفرض الإرسال (بعض الأجهزة لا ترسل Enter)
         if (rfidTimeoutRef.current) clearTimeout(rfidTimeoutRef.current);
         rfidTimeoutRef.current = setTimeout(() => {
           const tag = rfidBufferRef.current.trim();
@@ -239,7 +224,6 @@ export default function Attendance() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
         {/* بطاقة وضع الإدخال */}
         <Card>
-          {/* أزرار الوضع */}
           <div className="flex items-center gap-1 mb-4">
             {([
               { key: 'manual', label: 'يدوي', Icon: UserCheck },
@@ -249,8 +233,8 @@ export default function Attendance() {
               <button key={key} onClick={() => setMode(key)}
                 className={`flex-1 flex items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-medium transition-colors ${
                   mode === key
-                    ? 'bg-navy-800 text-gold-200 dark:bg-gold-500 dark:text-navy-900'
-                    : 'text-navy-500 hover:bg-navy-100/60 dark:text-navy-300'
+                    ? 'bg-[#ddf500] text-[#161616] font-bold'
+                    : 'text-navy-500 hover:bg-white/5 dark:text-navy-300'
                 }`}>
                 <Icon className="h-4 w-4" /> {label}
               </button>
@@ -267,11 +251,11 @@ export default function Attendance() {
                 onChange={(e) => setSearch(e.target.value)}
               />
               {options.length > 0 && (
-                <div className="absolute z-10 left-0 right-0 mt-1 rounded-xl border border-navy-100 dark:border-white/10 bg-white dark:bg-navy-900 shadow-card max-h-56 overflow-y-auto">
+                <div className="absolute z-10 left-0 right-0 mt-1 rounded-xl border border-navy-100 dark:border-white/10 bg-white dark:bg-[#161616] shadow-card max-h-56 overflow-y-auto">
                   {options.map((m) => (
                     <button key={m.id} disabled={checkingIn}
                       onClick={() => checkIn({ memberId: m.id }, 'manual')}
-                      className="w-full text-right px-4 py-2.5 text-sm hover:bg-navy-50 dark:hover:bg-white/5 text-navy-700 dark:text-navy-100 flex items-center gap-2.5">
+                      className="w-full text-right px-4 py-2.5 text-sm hover:bg-navy-50 dark:hover:bg-white/5 text-navy-700 dark:text-white flex items-center gap-2.5">
                       <Avatar src={m.photo} firstName={m.firstName} lastName={m.lastName} size="sm" />
                       <span className="flex-1">{m.firstName} {m.lastName}</span>
                       <span className="font-mono text-xs text-navy-400">{m.memberCode}</span>
@@ -286,15 +270,9 @@ export default function Attendance() {
           {/* ─── وضع QR ─── */}
           {mode === 'qr' && (
             <div className="flex flex-col items-center">
-              {/*
-                الإصلاح: نُبقي عنصر #qr-reader موجوداً دائماً في DOM لكن نخفيه
-                عندما لا يكون المسح نشطاً بـ visibility:hidden + height:0 بدلاً
-                من display:none، لأن Html5Qrcode تحتاج العنصر موجوداً ليتمكن
-                من تحديد الأبعاد وطلب صلاحية الكاميرا بنجاح.
-              */}
               <div
                 id="qr-reader"
-                className="w-full max-w-xs rounded-xl overflow-hidden bg-navy-900"
+                className="w-full max-w-xs rounded-xl overflow-hidden bg-black border border-white/10"
                 style={{
                   minHeight: scanning ? 260 : 1,
                   visibility: scanning ? 'visible' : 'hidden',
@@ -308,17 +286,29 @@ export default function Attendance() {
                 </div>
               )}
 
-              {!scanning ? (
-                <Button variant="secondary" icon={<Camera className="h-4 w-4" />} className="mt-4" onClick={startScanner}>
-                  تشغيل الكاميرا
-                </Button>
-              ) : (
-                <Button variant="outline" icon={<CameraOff className="h-4 w-4" />} className="mt-4" onClick={stopScanner}>
-                  إيقاف الكاميرا
-                </Button>
-              )}
+              <div className="flex gap-2 mt-4 justify-center flex-wrap">
+                {!scanning ? (
+                  <Button variant="secondary" icon={<Camera className="h-4 w-4" />} onClick={() => startScanner()}>
+                    تشغيل الكاميرا
+                  </Button>
+                ) : (
+                  <>
+                    <Button variant="outline" icon={<CameraOff className="h-4 w-4" />} onClick={stopScanner}>
+                      إيقاف الكاميرا
+                    </Button>
+                    <button 
+                       onClick={toggleCamera} 
+                       className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl bg-white/10 text-white border border-white/20 hover:bg-white/20 transition"
+                     >
+                       <SwitchCamera className="h-4 w-4" /> 
+                       تبديل الكاميرا
+                     </button>
+                  </>
+                )}
+              </div>
+              
               <p className="text-xs text-navy-400 dark:text-navy-300/60 mt-3 text-center">
-                وجّه الكاميرا نحو رمز QR الموجود على بطاقة العضو الرقمية
+                وجّه الكاميرا نحو رمز QR. استخدم زر التبديل لتغيير الكاميرا في الهاتف.
               </p>
             </div>
           )}
@@ -326,7 +316,7 @@ export default function Attendance() {
           {/* ─── وضع RFID ─── */}
           {mode === 'rfid' && (
             <div className="flex flex-col items-center gap-4 py-4">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gold-100 text-gold-600 dark:bg-gold-500/15 dark:text-gold-300">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#ddf500]/10 text-[#ddf500]">
                 <Nfc className="h-9 w-9" />
               </div>
               <div className="text-center">
@@ -336,7 +326,7 @@ export default function Attendance() {
                 </p>
               </div>
               <div className="text-xs text-navy-400 dark:text-navy-300/60 bg-navy-50 dark:bg-white/5 rounded-xl px-4 py-2 text-center">
-                تأكد من أن جهاز RFID متصل بالحاسوب وأن رموز البطاقات مسجَّلة في ملفات الأعضاء.
+                تأكد من أن جهاز RFID متصل بالحاسوب وأن رموز البطاقات مسجَّلة.
               </div>
               {checkingIn && <Spinner className="py-2" />}
             </div>
@@ -351,7 +341,7 @@ export default function Attendance() {
               {(['daily', 'weekly', 'monthly'] as Range[]).map((r) => (
                 <button key={r} onClick={() => setRange(r)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    range === r ? 'bg-navy-800 text-gold-200 dark:bg-gold-500 dark:text-navy-900' : 'text-navy-500 hover:bg-navy-100/60 dark:text-navy-300'
+                    range === r ? 'bg-[#ddf500] text-[#161616] font-bold' : 'text-navy-500 hover:bg-white/5 dark:text-navy-300'
                   }`}>
                   {r === 'daily' ? 'اليوم' : r === 'weekly' ? 'الأسبوع' : 'الشهر'}
                 </button>
@@ -363,10 +353,10 @@ export default function Attendance() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={summary?.series || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#94A3B822" vertical={false} />
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} stroke="#94A3B8" />
-                <YAxis tick={{ fontSize: 10 }} stroke="#94A3B8" width={28} allowDecimals={false} />
+                <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#888' }} stroke="#333" />
+                <YAxis tick={{ fontSize: 10, fill: '#888' }} stroke="#333" width={28} allowDecimals={false} />
                 <Tooltip contentStyle={tooltipStyle} />
-                <Bar dataKey="count" fill="#D4AF37" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" fill="#ddf500" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -379,7 +369,7 @@ export default function Attendance() {
           <h3 className="font-display font-bold text-navy-900 dark:text-white">آخر تسجيلات الحضور</h3>
         </div>
         {loadingRecords ? <Spinner /> : !records.length ? (
-          <EmptyState icon={<CalendarCheck className="h-7 w-7" />} title="لا يوجد تسجيلات حضور بعد" />
+          <EmptyState icon={<CalendarCheck className="h-7 w-7 text-[#ddf500]" />} title="لا يوجد تسجيلات حضور بعد" />
         ) : (
           <div className="divide-y divide-navy-50 dark:divide-white/5 mt-2">
             {records.map((r) => (
@@ -393,7 +383,7 @@ export default function Attendance() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-navy-500 dark:text-navy-300 text-xs">{formatDateTime(r.date)}</span>
-                  <Badge className="bg-navy-50 text-navy-500 dark:bg-white/5 dark:text-navy-200">
+                  <Badge className="bg-navy-50 text-navy-500 dark:bg-white/5 dark:text-[#ddf500]">
                     {METHOD_LABELS[r.method] || r.method}
                   </Badge>
                 </div>
