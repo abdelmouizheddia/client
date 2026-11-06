@@ -22,9 +22,9 @@ import ArchivePage from './pages/Archive';
 import SettingsPage from './pages/Settings';
 import Display from './pages/Display';
 import ActivityLog from './pages/ActivityLog';
-// وداخل الـ Routes أضف:
-<Route path="/activities" element={<ActivityLog />} />
-// صفحة 404 داخل الـ layout مع إعادة توجيه للوحة التحكم
+
+
+
 function NotFound() { return <Navigate to="/" replace />; }
 
 // حماية للصفحات المخصصة للمسؤول فقط
@@ -75,7 +75,7 @@ export default function App() {
                 <Route path="reports" element={<AdminRoute><Reports /></AdminRoute>} />
                 <Route path="archive" element={<AdminRoute><ArchivePage /></AdminRoute>} />
                 <Route path="settings" element={<AdminRoute><SettingsPage /></AdminRoute>} />
-
+                <Route path="/activities" element={<ActivityLog />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>

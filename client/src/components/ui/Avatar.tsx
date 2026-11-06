@@ -15,9 +15,13 @@ const sizeMap = {
 };
 
 export default function Avatar({ src, firstName, lastName, size = 'md' }: AvatarProps) {
-  // إضافة رابط السيرفر إذا كان المسار يبدأ بـ /uploads
+  // الحل الاحترافي: دعم الصور القديمة (Render) والحديثة (Supabase)
   const API_URL = 'https://azzouz-gym-api.onrender.com';
-  const imageUrl = src?.startsWith('/uploads') ? `${API_URL}${src}` : src;
+  let imageUrl = src;
+  
+  if (src && src.startsWith('/')) {
+    imageUrl = `${API_URL}${src}`;
+  }
 
   return (
     <div className={`flex items-center justify-center rounded-full bg-navy-100 text-navy-600 dark:bg-white/10 dark:text-gold-200 font-display font-bold overflow-hidden shrink-0 ${sizeMap[size]}`}>

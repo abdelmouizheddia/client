@@ -227,38 +227,10 @@ table {
     padding-left: 0.75rem !important; 
     padding-right: 0.75rem !important;
   }
-}/* ════════ إصلاح المستطيل الداكن / الفراغ الجانبي ════════ */
-/* ════════ إصلاح الفراغ الجانبي والمساحة البيضاء ════════ */
-@media (min-width: 768px) {
-  /* تثبيت عرض القائمة الجانبية بشكل دقيق */
-  aside {
-    width: 260px !important;
-    max-width: 260px !important;
-    min-width: 260px !important;
-  }
-  
-  /* إجبار المحتوى الرئيسي على البدء مباشرة بعد القائمة الجانبية */
-  body > #root > div > main,
-  main,
-  .md\:mr-64 {
-    margin-right: 260px !important;
-    width: calc(100vw - 260px) !important;
-    max-width: calc(100vw - 260px) !important;
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-  }
 }
 
-  /* 2. إجبار المحتوى الرئيسي على الالتصاق التام بالقائمة الجانبية (إلغاء الفراغ) */
-  #root > div > main,
-  main,
-  .md\:mr-64 {
-    margin-right: 260px !important;
-    width: calc(100% - 260px) !important;
-  }
-
-
-/* 3. منع الخلفية الداكنة من التسرب خارج القائمة الجانبية في الوضع المضيء */
+/* ════════ إصلاح المستطيل الداكن / الفراغ الجانبي النهائي ════════ */
+/* دمج خلفية الصفحة مع القائمة الجانبية لمنع ظهور الفراغ دون التسبب في إزاحة أو تقلص للمحتوى */
 #root > div {
-  background-color: transparent !important;
+  background-color: var(--azzouz-carbon) !important;
 }
