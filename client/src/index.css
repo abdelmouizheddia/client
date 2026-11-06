@@ -16,7 +16,7 @@
   
   --color-primary: var(--azzouz-lime);
   --color-primary-hover: #c4d900;
-  --bg-sidebar: var(--azzouz-dark);
+  --bg-sidebar: var(--azzouz-carbon);
   --bg-dark: var(--azzouz-carbon);
 }
 
@@ -28,7 +28,7 @@ html.dark {
   box-sizing: border-box;
 }
 
-/* ════════ إصلاح تجاوب شاشات الهواتف الأساسي ════════ */
+/* ════════ 1. الهيكل الأساسي ومنع الإزاحة والتجاوب ════════ */
 html, body, #root {
   overflow-x: hidden !important;
   width: 100% !important;
@@ -38,21 +38,6 @@ html, body, #root {
 body {
   font-family: 'IBM Plex Sans Arabic', 'Tajawal', sans-serif;
   -webkit-font-smoothing: antialiased;
-  background-color: #F4F6FA;
-  color: #0A1F44;
-}
-
-/* 1. تحويل الخلفيات الداكنة إلى الأسود الكربوني المطابق للموقع */
-html.dark body,
-body.dark,
-.dark body,
-.bg-slate-900,
-.bg-slate-950,
-.bg-gray-900,
-.bg-\[\#0f172a\],
-.bg-\[\#1e293b\] {
-  background-color: var(--azzouz-black) !important;
-  color: #ffffff !important;
 }
 
 h1, h2, h3, h4, h5, .font-display {
@@ -65,8 +50,37 @@ h1, h2, h3, h4, h5, .font-display {
   unicode-bidi: isolate;
 }
 
-/* 2. تحويل البطاقات والقائمة الجانبية (Sidebar) */
+/* ════════ 2. ألوان الوضع العادي (Light Mode) الاحترافية ════════ */
+/* خلفية رمادية فاتحة ونصوص داكنة واضحة، مع إصلاح الفراغ الجانبي */
+html:not(.dark) body,
+html:not(.dark) #root > div {
+  background-color: #F3F4F6 !important; 
+  color: #111827 !important; 
+}
+
+/* بطاقات بيضاء ناصعة مع ظل ناعم للوضع المضيء */
+html:not(.dark) .bg-white {
+  background-color: #ffffff !important;
+  border-color: #E5E7EB !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* ════════ 3. ألوان الوضع الداكن (Dark Mode) ════════ */
+html.dark body,
+html.dark #root > div,
+html.dark .bg-slate-900,
+html.dark .bg-slate-950,
+html.dark .bg-gray-900,
+html.dark .bg-\[\#0f172a\],
+html.dark .bg-\[\#1e293b\] {
+  background-color: var(--azzouz-black) !important;
+  color: #ffffff !important;
+}
+
+/* ════════ 4. القائمة الجانبية (Sidebar) ════════ */
+/* القائمة الجانبية داكنة في كلا الوضعين للحفاظ على قوة الهوية الرياضية */
 aside,
+aside > div,
 .bg-slate-800,
 .dark .bg-slate-800,
 .bg-white.dark\:bg-slate-800,
@@ -76,44 +90,53 @@ aside,
   border-color: var(--azzouz-edge) !important;
 }
 
-/* تحديد لون النص في القائمة الجانبية */
+/* تحديد ألوان عناصر القائمة الجانبية */
 aside a, aside button {
-  color: #e2e8f0 !important;
+  color: #9CA3AF !important;
+}
+aside a:hover, aside button:hover {
+  color: #ffffff !important;
 }
 
 /* تحسين شكل الأزرار النشطة في القائمة الجانبية */
-aside a.active,
-aside button.active {
-  background: rgba(221, 245, 0, 0.12) !important;
+aside a.active, aside button.active {
+  background: rgba(221, 245, 0, 0.1) !important;
   color: var(--color-primary) !important;
   border-right: 4px solid var(--color-primary) !important;
 }
 
-/* 3. استبدال الألوان بالأصفر الفسفوري */
-.text-\[\#D4AF37\],
-.text-amber-400,
-.text-amber-500,
-.text-yellow-500,
-.text-blue-600 {
+/* ════════ 5. اللون المشترك (الأصفر الفسفوري) ════════ */
+.text-\[\#D4AF37\], .text-amber-400, .text-amber-500, .text-yellow-500, .text-blue-600 {
   color: var(--color-primary) !important;
 }
-
-.bg-\[\#D4AF37\],
-.bg-amber-500,
-.bg-yellow-500,
-.bg-blue-600 {
+.bg-\[\#D4AF37\], .bg-amber-500, .bg-yellow-500, .bg-blue-600 {
   background-color: var(--color-primary) !important;
-  color: #161616 !important;
+  color: #111827 !important;
   font-weight: 800 !important;
 }
-
-.border-\[\#D4AF37\],
-.border-amber-500,
-.border-blue-600 {
+.border-\[\#D4AF37\], .border-amber-500, .border-blue-600 {
   border-color: var(--color-primary) !important;
 }
 
-/* ===== Glassmorphism ===== */
+/* ════════ 6. التصاق المحتوى بالقائمة الجانبية (إصلاح الإزاحة) ════════ */
+@media (min-width: 768px) {
+  aside {
+    width: 260px !important;
+    max-width: 260px !important;
+    min-width: 260px !important;
+  }
+  body > #root > div > main,
+  main,
+  .md\:mr-64 {
+    margin-right: 260px !important;
+    width: calc(100vw - 260px) !important;
+    max-width: calc(100vw - 260px) !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+}
+
+/* ===== Glassmorphism (البطاقات الشفافة) ===== */
 .glass {
   background: rgba(255, 255, 255, 0.68);
   backdrop-filter: blur(18px) saturate(160%);
@@ -189,17 +212,13 @@ html.dark ::-webkit-scrollbar-thumb {
   .md\:mr-64 { margin-right: 0 !important; }
 }
 
-/* ════════ إصلاح تجاوب شاشات الهواتف (عناصر الواجهة) ════════ */
-
-/* إجبار أزرار أعلى الصفحة على النزول لسطر جديد إذا ضاقت الشاشة */
+/* ════════ 7. تجاوب شاشات الهواتف ════════ */
 .flex.items-center.justify-between, 
 header > div, 
 .page-header {
   flex-wrap: wrap !important;
   gap: 10px !important;
 }
-
-/* السماح للجداول بالتمرير الأفقي داخل الهاتف دون تخريب باقي الصفحة */
 table {
   min-width: 600px !important;
 }
@@ -210,27 +229,14 @@ table {
   overflow-x: auto !important;
   -webkit-overflow-scrolling: touch;
 }
-
-/* إصلاح التفاف الأزرار في شاشات الهواتف */
 @media (max-width: 640px) {
-  .page-header .flex, 
-  .flex-row-reverse,
-  .gap-2,
-  .gap-4 {
+  .page-header .flex, .flex-row-reverse, .gap-2, .gap-4 {
     flex-wrap: wrap !important;
     justify-content: flex-start !important;
   }
-
-  /* تصغير حجم الأزرار قليلاً لتناسب الشاشات الصغيرة */
   button {
     font-size: 0.875rem !important;
     padding-left: 0.75rem !important; 
     padding-right: 0.75rem !important;
   }
-}
-
-/* ════════ إصلاح المستطيل الداكن / الفراغ الجانبي النهائي ════════ */
-/* دمج خلفية الصفحة مع القائمة الجانبية لمنع ظهور الفراغ دون التسبب في إزاحة أو تقلص للمحتوى */
-#root > div {
-  background-color: var(--azzouz-carbon) !important;
 }
