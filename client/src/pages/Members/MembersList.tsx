@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Users, Download, Upload, Pencil, Trash2, Eye, Ticket } from 'lucide-react';
+import { Plus, Search, Users, Download, Upload, Pencil, Trash2, Eye, Ticket, KeyRound } from 'lucide-react';
 import PageHeader from '../../components/ui/PageHeader';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -16,6 +16,7 @@ import MemberFormModal from './MemberFormModal';
 import { membersApi, sportsApi, excelApi } from '../../api/resources';
 import client, { apiErrorMessage } from '../../api/client';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import { useDebounce } from '../../hooks/useDebounce';
 import { STATUS_LABELS, STATUS_COLORS, GENDER_LABELS, formatDate } from '../../utils/format';
 import type { Member, Sport } from '../../types';
@@ -24,6 +25,7 @@ import type { Member, Sport } from '../../types';
 export default function MembersList() {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { role } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [members, setMembers] = useState<Member[]>([]);
@@ -43,6 +45,11 @@ export default function MembersList() {
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [archiveTarget, setArchiveTarget] = useState<Member | null>(null);
   const [archiving, setArchiving] = useState(false);
+
+  const [portalTarget, setPortalTarget] = useState<Member | null>(null);
+  const [portalPassword, setPortalPassword] = useState('');
+  const [portalPasswordConfirm, setPortalPasswordConfirm] = useState('');
+  const [portalSaving, setPortalSaving] = useState(false);
 
   // متغيرات نافذة تسجيل حصة زائر (Drop-in)
   const [showDropInModal, setShowDropInModal] = useState(false);
@@ -89,6 +96,42 @@ export default function MembersList() {
       setDropInLoading(false);
     }
   };
+
+  function closePortalModal() {
+    if (portalSaving) return;
+    setPortalTarget(null);
+    setPortalPassword('');
+    setPortalPasswordConfirm('');
+  }
+
+  async function handlePortalPasswordSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!portalTarget) return;
+
+    if (portalPassword.length < 8 || portalPassword.length > 128) {
+      showToast('كلمة المرور يجب أن تكون بين 8 و128 حرفاً.', 'error');
+      return;
+    }
+
+    if (portalPassword !== portalPasswordConfirm) {
+      showToast('كلمتا المرور غير متطابقتين.', 'error');
+      return;
+    }
+
+    setPortalSaving(true);
+    try {
+      await membersApi.setPortalPassword(portalTarget.id, portalPassword);
+      showToast('تم تفعيل الحساب الرقمي للعضو بنجاح.', 'success');
+      setPortalTarget(null);
+      setPortalPassword('');
+      setPortalPasswordConfirm('');
+    } catch (error: any) {
+      showToast(apiErrorMessage(error, 'تعذر تفعيل الحساب الرقمي.'), 'error');
+    } finally {
+      setPortalSaving(false);
+    }
+  }
 
   async function handleArchive() {
     if (!archiveTarget) return;
@@ -216,6 +259,21 @@ export default function MembersList() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1 justify-start">
                         <button onClick={() => navigate(`/members/${m.id}`)} className="p-1.5 rounded-lg text-navy-400 hover:bg-navy-100 hover:text-navy-700 dark:hover:bg-white/10"><Eye className="h-4 w-4" /></button>
+                        {role === 'admin' && (
+                          <button
+                            type="button"
+                            title="تفعيل الحساب الرقمي"
+                            aria-label={`تفعيل الحساب الرقمي للعضو ${m.firstName} ${m.lastName}`}
+                            onClick={() => {
+                              setPortalTarget(m);
+                              setPortalPassword('');
+                              setPortalPasswordConfirm('');
+                            }}
+                            className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10"
+                          >
+                            <KeyRound className="h-4 w-4" />
+                          </button>
+                        )}
                         <button onClick={() => { setEditingMember(m); setFormOpen(true); }} className="p-1.5 rounded-lg text-navy-400 hover:bg-navy-100 hover:text-navy-700 dark:hover:bg-white/10"><Pencil className="h-4 w-4" /></button>
                         <button onClick={() => setArchiveTarget(m)} className="p-1.5 rounded-lg text-navy-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10"><Trash2 className="h-4 w-4" /></button>
                       </div>
@@ -229,6 +287,78 @@ export default function MembersList() {
       </Card>
 
       <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+
+      {portalTarget && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-navy-900/60 dark:bg-black/70 backdrop-blur-sm p-4" dir="rtl">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#0A0F1C] border border-gray-100 dark:border-white/10 p-6 shadow-2xl">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600">
+                <KeyRound className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-navy-900 dark:text-white">تفعيل الحساب الرقمي</h3>
+                <p className="text-sm text-gray-500 dark:text-white/50">
+                  {portalTarget.firstName} {portalTarget.lastName}
+                </p>
+              </div>
+            </div>
+
+            <p className="text-sm text-gray-500 dark:text-white/50 mb-5">
+              رمز العضوية: <span className="font-mono font-bold">{portalTarget.memberCode}</span>
+            </p>
+
+            <form onSubmit={handlePortalPasswordSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-navy-800 dark:text-white/80 mb-2">كلمة المرور الجديدة</label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  maxLength={128}
+                  autoComplete="new-password"
+                  value={portalPassword}
+                  onChange={(e) => setPortalPassword(e.target.value)}
+                  className="w-full h-12 px-4 border border-gray-200 dark:border-white/10 rounded-xl bg-gray-50 dark:bg-white/5 text-navy-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500"
+                  placeholder="8 أحرف على الأقل"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-navy-800 dark:text-white/80 mb-2">تأكيد كلمة المرور</label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  maxLength={128}
+                  autoComplete="new-password"
+                  value={portalPasswordConfirm}
+                  onChange={(e) => setPortalPasswordConfirm(e.target.value)}
+                  className="w-full h-12 px-4 border border-gray-200 dark:border-white/10 rounded-xl bg-gray-50 dark:bg-white/5 text-navy-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500"
+                  placeholder="أعد كتابة كلمة المرور"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  disabled={portalSaving}
+                  onClick={closePortalModal}
+                  className="flex-1 h-11 rounded-xl bg-gray-100 dark:bg-white/10 text-navy-700 dark:text-white font-bold disabled:opacity-50"
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="submit"
+                  disabled={portalSaving}
+                  className="flex-1 h-11 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 disabled:opacity-50"
+                >
+                  {portalSaving ? 'جارٍ التفعيل...' : 'تفعيل الحساب'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <MemberFormModal open={formOpen} onClose={() => setFormOpen(false)} onSaved={loadMembers} member={editingMember} />
       <ConfirmDialog

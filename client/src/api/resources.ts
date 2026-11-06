@@ -49,6 +49,8 @@ export const membersApi = {
   uploadDocuments: (id: number, formData: FormData) => client.post(`/members/${id}/documents`, formData).then((r) => r.data),
   deleteDocument: (docId: number) => client.delete(`/members/documents/${docId}`).then((r) => r.data),
   archive: (id: number) => client.delete(`/members/${id}`).then((r) => r.data),
+  setPortalPassword: (id: number, password: string) =>
+    client.post(`/members/${id}/portal-password`, { password }).then((r) => r.data),
 };
 
 // ----- Virtual Cards -----
