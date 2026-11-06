@@ -19,7 +19,7 @@ const PIE_COLORS = ['#0A1F44', '#D4AF37', '#10B981', '#3B82F6', '#94A3B8', '#F43
 
 function ChartCard({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
-    <Card className="animate-fade-up">
+    <Card className="animate-fade-up min-w-0">
       <div className="mb-4">
         <h3 className="font-display font-bold text-navy-900 dark:text-white">{title}</h3>
         {subtitle && <p className="text-xs text-navy-400 dark:text-navy-300/60 mt-0.5">{subtitle}</p>}
@@ -138,7 +138,7 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </ChartCard>
 
-        <Card className="animate-fade-up">
+        <Card className="animate-fade-up min-w-0">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display font-bold text-navy-900 dark:text-white">أعياد الميلاد هذا الشهر</h3>
             <Cake className="h-5 w-5 text-gold-500" />
@@ -172,3 +172,4 @@ export default function Dashboard() {
     </div>
   );
 }
+

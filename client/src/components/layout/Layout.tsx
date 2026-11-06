@@ -9,12 +9,13 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-[#F4F6FA] dark:bg-navy-950">
       <Sidebar mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
-      <div className="md:mr-64">
+      <div className="md:mr-64 min-w-0">
         <Topbar onOpenMobile={() => setMobileOpen(true)} />
-        <main className="p-4 md:p-6 max-w-[1500px] mx-auto">
+        <main className="w-full min-w-0 p-4 md:p-6 max-w-[1500px] mx-auto">
           <Outlet />
         </main>
       </div>
     </div>
   );
 }
+

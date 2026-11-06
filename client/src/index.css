@@ -118,24 +118,29 @@ aside a.active, aside button.active {
   border-color: var(--color-primary) !important;
 }
 
-/* ════════ 6. التصاق المحتوى بالقائمة الجانبية (إصلاح الإزاحة) ════════ */
+/* ════════ 6. تخطيط المحتوى بجانب القائمة الجانبية ════════ */
 @media (min-width: 768px) {
   aside {
-    width: 260px !important;
-    max-width: 260px !important;
-    min-width: 260px !important;
+    width: 16rem !important;
+    max-width: 16rem !important;
+    min-width: 16rem !important;
   }
-  body > #root > div > main,
-  main,
+
   .md\:mr-64 {
-    margin-right: 260px !important;
-    width: calc(100vw - 260px) !important;
-    max-width: calc(100vw - 260px) !important;
-    padding-left: 24px !important;
-    padding-right: 24px !important;
+    margin-right: 16rem !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+
+  main {
+    width: 100% !important;
+    max-width: 1500px !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 }
-
 /* ===== Glassmorphism (البطاقات الشفافة) ===== */
 .glass {
   background: rgba(255, 255, 255, 0.68);
