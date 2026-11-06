@@ -1,6 +1,3 @@
-cd "D:\WEB IDEE ITO GYM\azzouz gym UPDATED PLATFORM"
-
-@'
 $ErrorActionPreference = "Continue"
 
 while ($true) {
@@ -20,4 +17,3 @@ while ($true) {
 
     Start-Sleep -Seconds 30
 }
-'@ | Set-Content -Encoding UTF8 "auto-push.ps1"

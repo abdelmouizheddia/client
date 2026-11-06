@@ -219,7 +219,7 @@ router.post('/', photoUpload.single('photo'), async (req, res) => {
 🌐 https://abdelmouizheddia.github.io/AZGYM/`;
 
         // توليد رمز الدخول (QR) كصورة بخلفية بيضاء واضحة
-        const qrDataObj = JSON.stringify({ type: 'BTS_MEMBER', code: finalCode });
+        const qrDataObj = JSON.stringify({ type: 'AZG_MEMBER', code: finalCode });
         const qrImageBase64 = await QRCode.toDataURL(qrDataObj, {
            width: 500, // حجم كبير وواضح للصورة
            margin: 2,
