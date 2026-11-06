@@ -261,7 +261,7 @@ export default function MembersList() {
                 />
               </div>
               
-              <div className="flex gap-3 pt-4">
+              <div className="flex flex-wrap items-center gap-2 justify-end">
                 <button
                   type="button"
                   onClick={() => setShowDropInModal(false)}

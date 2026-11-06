@@ -247,3 +247,20 @@ table {
   overflow-x: auto !important;
   -webkit-overflow-scrolling: touch;
 }
+/* إصلاح التفاف الأزرار في شاشات الهواتف */
+@media (max-width: 640px) {
+  .page-header .flex, 
+  .flex-row-reverse,
+  .gap-2,
+  .gap-4 {
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important; /* أو center حسب تفضيلك */
+  }
+
+  /* تصغير حجم الأزرار قليلاً لتناسب الشاشات الصغيرة */
+  button {
+    font-size: 0.875rem !important; /* text-sm */
+    padding-left: 0.75rem !important; 
+    padding-right: 0.75rem !important;
+  }
+}
