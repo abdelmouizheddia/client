@@ -165,12 +165,54 @@ export default function MembersList() {
   async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+
     const fd = new FormData();
     fd.append('file', file);
+
     try {
       const res = await excelApi.importMembers(fd);
-      showToast(res.message || 'تم الاستيراد بنجاح', 'success');
-      loadMembers();
+      const result = res as {
+        message?: string;
+        created?: number;
+        failed?: number;
+        errors?: Array<{ row: number; error: string }>;
+      };
+
+      const created = Number(result.created || 0);
+      const failed = Number(result.failed || 0);
+      const errors = Array.isArray(result.errors) ? result.errors : [];
+
+      if (created > 0) {
+        showToast(
+          `تم استيراد ${created} عضو بنجاح. الصفوف التي فشلت: ${failed}`,
+          'success'
+        );
+        loadMembers();
+      } else {
+        showToast(
+          result.message || 'لم يتم استيراد أي عضو',
+          'error'
+        );
+      }
+
+      if (failed > 0) {
+        const displayedErrors = errors.slice(0, 20).map(
+          (item) => `السطر ${item.row}: ${item.error}`
+        );
+
+        const remaining = Math.max(0, errors.length - displayedErrors.length);
+
+        const errorMessage = [
+          `نتيجة الاستيراد: ${created} ناجح، ${failed} فاشل.`,
+          '',
+          ...displayedErrors,
+          ...(remaining > 0
+            ? ['', `يوجد ${remaining} خطأ إضافي لم يتم عرضه.`]
+            : []),
+        ].join('\n');
+
+        window.alert(errorMessage);
+      }
     } catch (err) {
       showToast(apiErrorMessage(err, 'تعذر استيراد الملف'), 'error');
     } finally {
@@ -185,7 +227,7 @@ export default function MembersList() {
         subtitle={`${total} عضو مسجل`}
         actions={
           <>
-            <input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImport} />
+            <input ref={fileInputRef} type="file" accept=".xlsx" className="hidden" onChange={handleImport} />
             <Button variant="outline" size="md" icon={<Upload className="h-4 w-4" />} onClick={() => fileInputRef.current?.click()}>استيراد Excel</Button>
             <Button variant="outline" size="md" icon={<Download className="h-4 w-4" />} onClick={handleExport}>تصدير Excel</Button>
             
