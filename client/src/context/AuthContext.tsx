@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { authApi } from '../api/resources';
-import axios from 'axios'; // تم إضافة axios للاتصال المباشر بمسار تسجيل الخروج
+
 
 export type UserRole = 'admin' | 'coach';
 
@@ -71,24 +71,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // تعديل دالة تسجيل الخروج لإرسال إشعار للخادم قبل مسح البيانات
   const logout = useCallback(async () => {
     try {
-      const currentToken = localStorage.getItem(STORE.token);
-      if (currentToken) {
-        await axios.post('https://azzouz-gym-api.onrender.com/api/auth/logout', {}, {
-          headers: { Authorization: `Bearer ${currentToken}` }
-        });
+      if (localStorage.getItem(STORE.token)) {
+        await authApi.logout();
       }
     } catch (e) {
-      // نتجاهل الخطأ إذا انقطع الاتصال بالإنترنت، المهم أن نخرجه محلياً
-    }
+      // حتى عند انقطاع الاتصال، يجب إنهاء الجلسة محلياً.
+    } finally {
+      Object.values(STORE).forEach((k) => localStorage.removeItem(k));
 
-    Object.values(STORE).forEach((k) => localStorage.removeItem(k));
-    setToken(null);
-    setRole('admin');
-    setCoachId(null);
-    setCoachName(null);
+      setToken(null);
+      setRole('admin');
+      setClubName('AZZOUZ GYM الرياضية');
+      setLogoUrl(null);
+      setCoachId(null);
+      setCoachName(null);
+      setCommissionRate(500);
+    }
   }, []);
 
   const refreshProfile = useCallback(async () => {
@@ -106,7 +106,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [clubName]);
 
   useEffect(() => {
-    if (token) refreshProfile();
+    if (!token) return;
+
+    refreshProfile();
+
+    let heartbeatInFlight = false;
+
+    const sendHeartbeat = async () => {
+      if (
+        document.visibilityState !== 'visible' ||
+        heartbeatInFlight
+      ) {
+        return;
+      }
+
+      heartbeatInFlight = true;
+
+      try {
+        await authApi.me();
+      } catch {
+        // لا نوقف الواجهة عند فشل تحديث النشاط مؤقتاً.
+      } finally {
+        heartbeatInFlight = false;
+      }
+    };
+
+    const intervalId = window.setInterval(
+      sendHeartbeat,
+      5 * 60 * 1000
+    );
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void sendHeartbeat();
+      }
+    };
+
+    document.addEventListener(
+      'visibilitychange',
+      handleVisibilityChange
+    );
+
+    return () => {
+      window.clearInterval(intervalId);
+      document.removeEventListener(
+        'visibilitychange',
+        handleVisibilityChange
+      );
+    };
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 

@@ -10,6 +10,12 @@ export const authApi = {
   login: (password: string, username?: string) =>
     client.post('/auth/login', username ? { password, username } : { password }).then((r) => r.data),
   me: () => client.get('/auth/me').then((r) => r.data),
+  logout: () => client.post('/auth/logout').then((r) => r.data),
+};
+
+// ----- Activities -----
+export const activitiesApi = {
+  list: () => client.get('/activities').then((r) => r.data),
 };
 
 // ----- Dashboard -----

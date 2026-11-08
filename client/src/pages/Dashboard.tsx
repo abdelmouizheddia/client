@@ -144,9 +144,11 @@ export default function Dashboard() {
             <Cake className="h-5 w-5 text-gold-500" />
           </div>
           <div className="flex items-center gap-4 mb-4 px-1">
-            <div className="flex items-center gap-1.5 text-sm text-navy-600 dark:text-navy-200">
-              <span className="text-navy-500 font-bold">&#9794;</span> {stats.maleCount} ذكور
-            </div>
+            {!stats.isCoachView && (
+              <div className="flex items-center gap-1.5 text-sm text-navy-600 dark:text-navy-200">
+                <span className="text-navy-500 font-bold">&#9794;</span> {stats.maleCount} ذكور
+              </div>
+            )}
             <div className="flex items-center gap-1.5 text-sm text-navy-600 dark:text-navy-200">
               <span className="text-rose-400 font-bold">&#9792;</span> {stats.femaleCount} إناث
             </div>
