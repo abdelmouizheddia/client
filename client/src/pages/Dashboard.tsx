@@ -58,12 +58,19 @@ export default function Dashboard() {
     <div>
       <PageHeader title="لوحة التحكم" subtitle="نظرة عامة على أداء النادي الرياضي" />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard label="الأعضاء النشطون" value={stats.activeMembers} icon={<Users className="h-5 w-5" />} accent="navy" />
         <StatCard label="اشتراكات منتهية" value={stats.expiredMembers} icon={<UserX className="h-5 w-5" />} accent="rose" />
         <StatCard label="تنتهي خلال 7 أيام" value={stats.expiringSoonCount} icon={<AlertTriangle className="h-5 w-5" />} accent="gold" />
         <StatCard label="دخل هذا الشهر" value={formatCurrency(stats.incomeThisMonth)} delta={stats.growthPercent} icon={<Wallet className="h-5 w-5" />} accent="emerald" />
         <StatCard label="دخل هذه السنة" value={formatCurrency(stats.incomeThisYear)} icon={<TrendingUp className="h-5 w-5" />} accent="navy" />
+        {!stats.isCoachView && (
+          <>
+            <StatCard label="دخل الذكور هذه السنة" value={formatCurrency(stats.maleIncomeThisYear || 0)} icon={<Wallet className="h-5 w-5" />} accent="navy" />
+            <StatCard label="دخل الإناث هذه السنة" value={formatCurrency(stats.femaleIncomeThisYear || 0)} icon={<Wallet className="h-5 w-5" />} accent="rose" />
+            <StatCard label="مداخيل أخرى" value={formatCurrency(stats.otherIncomeThisYear || 0)} icon={<Wallet className="h-5 w-5" />} accent="gold" />
+          </>
+        )}
         <StatCard label="إجمالي الأعضاء" value={stats.totalMembers} icon={<Users className="h-5 w-5" />} accent="gold" />
       </div>
 

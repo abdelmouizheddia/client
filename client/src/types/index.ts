@@ -56,6 +56,7 @@ export interface Paginated<T> { data: T[]; total: number; page: number; totalPag
 export interface DashboardStats {
   activeMembers: number; expiredMembers: number; expiringSoonCount: number;
   incomeThisMonth: number; incomeThisYear: number; growthPercent: number;
+  maleIncomeThisYear?: number; femaleIncomeThisYear?: number; otherIncomeThisYear?: number;
   maleCount: number; femaleCount: number; totalMembers: number;
   isCoachView?: boolean;
   birthdaysThisMonth: { id: number; firstName: string; lastName: string; birthDate: string; photo?: string | null; phone?: string | null; day: number }[];
