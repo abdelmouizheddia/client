@@ -14,6 +14,7 @@ import PageHeader from '../components/ui/PageHeader';
 import { Spinner } from '../components/ui/Loader';
 import EmptyState from '../components/ui/EmptyState';
 import { formatCurrency, formatDate } from '../utils/format';
+import { useAuth } from '../context/AuthContext';
 
 const PIE_COLORS = ['#0A1F44', '#D4AF37', '#10B981', '#3B82F6', '#94A3B8', '#F43F5E'];
 
@@ -38,6 +39,7 @@ const tooltipStyle = {
 };
 
 export default function Dashboard() {
+  const { role } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [charts, setCharts] = useState<ChartsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,7 +65,13 @@ export default function Dashboard() {
         <StatCard label="اشتراكات منتهية" value={stats.expiredMembers} icon={<UserX className="h-5 w-5" />} accent="rose" />
         <StatCard label="تنتهي خلال 7 أيام" value={stats.expiringSoonCount} icon={<AlertTriangle className="h-5 w-5" />} accent="gold" />
         <StatCard label="دخل هذا الشهر" value={formatCurrency(stats.incomeThisMonth)} delta={stats.growthPercent} icon={<Wallet className="h-5 w-5" />} accent="emerald" />
-        <StatCard label="دخل هذه السنة" value={formatCurrency(stats.incomeThisYear)} icon={<TrendingUp className="h-5 w-5" />} accent="navy" />
+        {role !== 'coach' && (
+          <StatCard label="دخل هذه السنة"
+            value={formatCurrency(stats.incomeThisYear)}
+            icon={<TrendingUp className="h-5 w-5" />}
+            accent="navy"
+          />
+        )}
         {!stats.isCoachView && (
           <>
             <StatCard label="دخل الذكور هذه السنة" value={formatCurrency(stats.maleIncomeThisYear || 0)} icon={<Wallet className="h-5 w-5" />} accent="navy" />
@@ -181,4 +189,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
